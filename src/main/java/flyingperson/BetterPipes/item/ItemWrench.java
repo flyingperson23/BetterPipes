@@ -59,12 +59,6 @@ public class ItemWrench extends Item implements IBetterPipesWrench {
                         }
                     }
                 }
-
-                if (te instanceof TileEntityFluidPipe) {
-                    TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
-                    for (int i = 0; i < pipe.sideConfig.length; i++) System.out.println(i+" "+pipe.sideConfig[i]);
-                    System.out.println(pipe.getConnectionStyle(0));
-                }
             }
         }
         return EnumActionResult.PASS;
