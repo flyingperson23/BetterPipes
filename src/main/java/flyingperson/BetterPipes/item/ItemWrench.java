@@ -1,6 +1,5 @@
 package flyingperson.BetterPipes.item;
 
-import blusunrize.immersiveengineering.common.blocks.metal.TileEntityFluidPipe;
 import flyingperson.BetterPipes.*;
 import flyingperson.BetterPipes.compat.CompatBase;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

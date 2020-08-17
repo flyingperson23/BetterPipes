@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 public class CompatThermalExpansion extends CompatBase {
 
+    //Currently completely broken
     @Override
     public boolean isModLoaded() {
         return Loader.isModLoaded("thermaldynamics");
