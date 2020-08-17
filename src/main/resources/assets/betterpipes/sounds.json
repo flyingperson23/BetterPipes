@@ -1,0 +1,7 @@
+{
+  "wrench": {
+    "category": "player",
+    "subtitle": "betterpipes.subtitle.wrench",
+    "sounds": [ "betterpipes:wrench" ]
+  }
+}

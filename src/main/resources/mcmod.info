@@ -1,0 +1,16 @@
+[
+{
+  "modid": "betterpipes",
+  "name": "Better Pipes",
+  "description": "Improves pipes",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["FlyingPerson"],
+  "credits": "FlyingPerson",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

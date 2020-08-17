@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "betterpipes:wrench"
+  },
+  "pattern": [
+    "i i",
+    "iii",
+    " i "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    }
+  }
+}
