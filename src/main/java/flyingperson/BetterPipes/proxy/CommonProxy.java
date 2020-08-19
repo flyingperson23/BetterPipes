@@ -35,6 +35,7 @@ public class CommonProxy {
     public void init(FMLInitializationEvent e) {
         BetterPipes.INSTANCE.registerMessage(MessageGetConnections.MyMessageHandler.class, MessageGetConnections.class, 0, Side.SERVER);
         BetterPipes.INSTANCE.registerMessage(MessageReturnConnections.MyMessageHandler.class, MessageReturnConnections.class, 1, Side.CLIENT);
+
     }
 
     public void postInit(FMLPostInitializationEvent e) {

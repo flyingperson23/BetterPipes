@@ -20,25 +20,35 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BetterPipesEventHandler {
     @SubscribeEvent
     public void onEvent(BlockEvent.PlaceEvent event) {
+
+
         for (CompatBase i : BetterPipes.COMPAT_LIST) {
             if (i.isModLoaded()) {
                 BlockPos pos = event.getPos();
                 if (event.getWorld().getBlockState(pos).getBlock().hasTileEntity(event.getWorld().getBlockState(pos))) {
                     for (EnumFacing j : EnumFacing.VALUES) {
                         if (i.canConnect(event.getWorld().getTileEntity(pos), j)) {
-                            boolean lookingAt = false;
-
-                            RayTraceResult rayTraceResult = Utils.getBlockLookingAtExclude(event.getPlayer(), pos);
-                            if (rayTraceResult != null) {
-                                if (Utils.arePosEqual(rayTraceResult.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
-                            }
                             Vec3d vec3d = Utils.getVecHitFromPos(pos, j);
                             Vec3d vec3d1 = Utils.getVecHitFromPos(pos, j.getOpposite());
 
-                            if (!((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect))) {
-                                i.disconnect(event.getWorld().getTileEntity(pos), j, event.getPlayer(), (float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
-                                i.disconnect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer(), (float) vec3d1.x, (float) vec3d1.y, (float) vec3d1.z);
-                            } else {
+                            i.disconnect(event.getWorld().getTileEntity(pos), j, event.getPlayer(), (float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
+                            i.disconnect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer(), (float) vec3d1.x, (float) vec3d1.y, (float) vec3d1.z);
+
+                            boolean lookingAt = false;
+
+                            RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                            RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
+
+
+                            if (rt1 != null) {
+                                if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
+                            }
+                            if (rt2 != null) {
+                                if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
+                            }
+
+
+                            if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
                                 i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer(), (float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
                                 i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer(), (float) vec3d1.x, (float) vec3d1.y, (float) vec3d1.z);
                             }

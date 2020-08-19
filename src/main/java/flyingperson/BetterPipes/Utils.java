@@ -373,7 +373,20 @@ public class Utils {
         return null;
     }
 
-    public static RayTraceResult getBlockLookingAtExclude(EntityPlayer liv, BlockPos exclude) {
+    public static RayTraceResult getBlockLookingat1(EntityPlayer liv, BlockPos exclude) {
+        Vec3d pos2 = liv.getPositionVector().addVector(0, liv.getEyeHeight(), 0);
+        RayTraceResult rayTraceResult = liv.world.rayTraceBlocks(pos2, pos2.add(liv.getLookVec().scale(12)), false, true, true);
+        if (rayTraceResult != null) {
+            if (rayTraceResult.typeOfHit != null) {
+                if (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK) {
+                    return rayTraceResult;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static RayTraceResult getBlockLookingat2(EntityPlayer liv, BlockPos exclude) {
         Vec3d pos2 = liv.getPositionVector().addVector(0, liv.getEyeHeight(), 0);
         RayTraceResult rayTraceResult = Utils.rayTraceBlocks(pos2, pos2.add(liv.getLookVec().scale(12)), false, true, true, liv.world, exclude);
         if (rayTraceResult != null) {
