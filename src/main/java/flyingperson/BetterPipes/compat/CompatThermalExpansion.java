@@ -43,7 +43,7 @@ public class CompatThermalExpansion extends CompatBase {
     }
 
     @Override
-    public void connect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ) {
+    public void connect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (canConnect(te, direction)) {
             if (te instanceof TileGrid) {
                 TileGrid grid = (TileGrid) te;
@@ -58,7 +58,7 @@ public class CompatThermalExpansion extends CompatBase {
     }
 
     @Override
-    public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ) {
+    public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (canConnect(te, direction)) {
             if (te instanceof TileGrid) {
                 TileGrid grid = (TileGrid) te;

@@ -28,7 +28,7 @@ public class CompatImmersiveEngineering extends CompatBase {
     }
 
     @Override
-    public void connect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ) {
+    public void connect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (canConnect(te, direction)) {
             if (te instanceof TileEntityFluidPipe) {
                 TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
@@ -36,6 +36,12 @@ public class CompatImmersiveEngineering extends CompatBase {
 
 
                 getInfo(pipe);
+
+
+
+
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
             }
         }
     }
@@ -50,12 +56,17 @@ public class CompatImmersiveEngineering extends CompatBase {
     }
 
     @Override
-    public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ) {
+    public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (canConnect(te, direction)) {
             if (te instanceof TileEntityFluidPipe) {
                 TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
 
                 getInfo(pipe);
+
+
+
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
             }
         }
     }

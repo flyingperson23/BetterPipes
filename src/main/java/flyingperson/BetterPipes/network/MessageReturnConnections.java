@@ -43,7 +43,7 @@ public class MessageReturnConnections implements IMessage {
         }
     }
 
-    public static class MyMessageHandler implements IMessageHandler<MessageReturnConnections, IMessage> {
+    public static class MessageHandler implements IMessageHandler<MessageReturnConnections, IMessage> {
 
         @Override
         public IMessage onMessage(MessageReturnConnections message, MessageContext ctx) {

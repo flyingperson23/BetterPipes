@@ -44,18 +44,24 @@ public class CompatGTCEItem extends CompatBase {
     }
 
     @Override
-    public void connect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ) {
+    public void connect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (isAcceptable(te)) {
             TileEntityInventoryPipe cable = (TileEntityInventoryPipe) te;
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, false);
+
+            te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+            te.markDirty();
         }
     }
 
     @Override
-    public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ) {
+    public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (isAcceptable(te)) {
             TileEntityInventoryPipe cable = (TileEntityInventoryPipe) te;
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, true);
+
+            te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+            te.markDirty();
         }
     }
 

@@ -25,12 +25,12 @@ public abstract class CompatBase {
      *  @param hitX where should the mod think the pipe was hit on the x axis
      *  @param hitY where should the mod think the pipe was hit on the y axis
      *  @param hitZ where should the mod think the pipe was hit on the z axis*/
-    public abstract void connect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ);
+    public abstract void connect(TileEntity te, EnumFacing direction, EntityPlayer player);
     /** @param te tileentity to disconnect
      *  @param direction the direction of the the tileentity to disconnect from te
      *  @param player the player connecting/disconnecting the pipe
      *  @param hitX where should the mod think the pipe was hit on the x axis
      *  @param hitY where should the mod think the pipe was hit on the y axis
      *  @param hitZ where should the mod think the pipe was hit on the z axis*/
-    public abstract void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player, float hitX, float hitY, float hitZ);
+    public abstract void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player);
 }

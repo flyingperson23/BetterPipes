@@ -26,7 +26,7 @@ public class MessageGetConnections implements IMessage {
         pos = BlockPos.fromLong(buf.readLong());
     }
 
-    public static class MyMessageHandler implements IMessageHandler<MessageGetConnections, IMessage> {
+    public static class MessageHandler implements IMessageHandler<MessageGetConnections, IMessage> {
 
         @Override public IMessage onMessage(MessageGetConnections message, MessageContext ctx) {
             EntityPlayerMP serverPlayer = ctx.getServerHandler().player;

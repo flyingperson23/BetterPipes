@@ -491,4 +491,22 @@ public class Utils {
         }
         return list;
     }
+
+    public static EnumFacing fromIndex(int index) {
+        switch(index) {
+            case 0:
+                return EnumFacing.DOWN;
+            case 1:
+                return EnumFacing.UP;
+            case 2:
+                return EnumFacing.NORTH;
+            case 3:
+                return EnumFacing.SOUTH;
+            case 4:
+                return EnumFacing.WEST;
+            case 5:
+                return EnumFacing.EAST;
+        }
+        return null;
+    }
 }
