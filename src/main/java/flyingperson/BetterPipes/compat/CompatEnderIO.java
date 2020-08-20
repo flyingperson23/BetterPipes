@@ -1,5 +1,8 @@
 package flyingperson.BetterPipes.compat;
 
+import appeng.me.cache.helpers.Connections;
+import crazypants.enderio.base.conduit.ConnectionMode;
+import crazypants.enderio.base.conduit.IClientConduit;
 import crazypants.enderio.base.conduit.IConduit;
 import crazypants.enderio.base.conduit.IServerConduit;
 import crazypants.enderio.conduits.conduit.TileConduitBundle;
@@ -37,30 +40,25 @@ public class CompatEnderIO extends CompatBase {
         return false;
     }
 
-    private boolean canConnectExternally(TileEntity te, EnumFacing direction) {
+    private boolean canConnectExternally(IServerConduit conduit, TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
-            TileConduitBundle tile = (TileConduitBundle) te;
-            for (IServerConduit conduit : tile.getServerConduits()) {
-                TileEntity connectTo = te.getWorld().getTileEntity(te.getPos().offset(direction, 1));
-                if (!isAcceptable(connectTo)) {
-                    return conduit.canConnectToExternal(direction, true);
-                }
+            TileEntity connectTo = te.getWorld().getTileEntity(te.getPos().offset(direction, 1));
+            if (!isAcceptable(connectTo)) {
+                return conduit.canConnectToExternal(direction, true);
             }
         }
         return false;
     }
 
-    private boolean canConnectToConduit(TileEntity te, EnumFacing direction) {
+    private boolean canConnectToConduit(IServerConduit conduit, TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
             TileConduitBundle tile = (TileConduitBundle) te;
-            for (IServerConduit conduit : tile.getServerConduits()) {
-                TileEntity connectTo = te.getWorld().getTileEntity(te.getPos().offset(direction, 1));
-                if (isAcceptable(connectTo)) {
-                    TileConduitBundle connectToConduit = (TileConduitBundle) connectTo;
-                    if (connectToConduit != null) {
-                        if (connectToConduit.getConduit(conduit.getClass()) != null) {
-                            return conduit.canConnectToConduit(direction, connectToConduit.getConduit(conduit.getClass()));
-                        }
+            TileEntity connectTo = te.getWorld().getTileEntity(te.getPos().offset(direction, 1));
+            if (isAcceptable(connectTo)) {
+                TileConduitBundle connectToConduit = (TileConduitBundle) connectTo;
+                if (connectToConduit != null) {
+                    if (connectToConduit.getConduit(conduit.getClass()) != null) {
+                        return conduit.canConnectToConduit(direction, connectToConduit.getConduit(conduit.getClass()));
                     }
                 }
             }
@@ -75,10 +73,10 @@ public class CompatEnderIO extends CompatBase {
             TileConduitBundle tile = (TileConduitBundle) te;
             for (IConduit conduit : tile.getConduits()) {
                 for (EnumFacing e : conduit.getConduitConnections()) {
-                    if (!connections.contains(e)) connections.add(e);
+                    if (!connections.contains(e) && conduit.getConnectionMode(e)!=ConnectionMode.DISABLED) connections.add(e);
                 }
                 for (EnumFacing e : conduit.getExternalConnections()) {
-                    if (!connections.contains(e)) connections.add(e);
+                    if (!connections.contains(e) && conduit.getConnectionMode(e)!=ConnectionMode.DISABLED) connections.add(e);
                 }
             }
         }
@@ -95,23 +93,29 @@ public class CompatEnderIO extends CompatBase {
         if (isAcceptable(te)) {
             TileConduitBundle tile = (TileConduitBundle) te;
             for (IServerConduit conduit : tile.getServerConduits()) {
-                if (canConnectToConduit(te, direction)) conduit.conduitConnectionAdded(direction);
-                else if (canConnectExternally(te, direction)) conduit.externalConnectionAdded(direction);
+                if (canConnectToConduit(conduit, te, direction)) conduit.conduitConnectionAdded(direction);
+                else if (canConnectExternally(conduit, te, direction)) {
+                    conduit.externalConnectionAdded(direction);
+                    if (conduit.supportsConnectionMode(ConnectionMode.IN_OUT)) conduit.setConnectionMode(direction, ConnectionMode.IN_OUT);
+                    else conduit.setConnectionMode(direction, ConnectionMode.OUTPUT);
+                }
                 conduit.connectionsChanged();
             }
+            tile.markDirty();
         }
     }
 
     @Override
     public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
         if (isAcceptable(te)) {
-            System.out.println("Disconnected "+te.getPos()+direction);
             TileConduitBundle tile = (TileConduitBundle) te;
             for (IServerConduit conduit : tile.getServerConduits()) {
-                if (conduit.getConduitConnections().contains(direction)) conduit.conduitConnectionRemoved(direction);
-                if (conduit.getExternalConnections().contains(direction)) conduit.externalConnectionRemoved(direction);
+                if (conduit.getExternalConnections().contains(direction)) conduit.setConnectionMode(direction, ConnectionMode.DISABLED);
+                conduit.conduitConnectionRemoved(direction);
+                conduit.externalConnectionRemoved(direction);
                 conduit.connectionsChanged();
             }
+            tile.markDirty();
         }
     }
 }

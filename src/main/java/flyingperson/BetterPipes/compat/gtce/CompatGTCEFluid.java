@@ -1,6 +1,6 @@
 package flyingperson.BetterPipes.compat.gtce;
 
-import flyingperson.BetterPipes.Utils;
+import flyingperson.BetterPipes.util.Utils;
 import flyingperson.BetterPipes.compat.CompatBase;
 import gregtech.api.pipenet.tile.AttachmentType;
 import gregtech.common.pipelike.fluidpipe.tile.TileEntityFluidPipe;

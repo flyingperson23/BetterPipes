@@ -1,6 +1,6 @@
 package flyingperson.BetterPipes.network;
 
-import flyingperson.BetterPipes.Utils;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 

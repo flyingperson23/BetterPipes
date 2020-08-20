@@ -1,4 +1,4 @@
-package flyingperson.BetterPipes;
+package flyingperson.BetterPipes.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

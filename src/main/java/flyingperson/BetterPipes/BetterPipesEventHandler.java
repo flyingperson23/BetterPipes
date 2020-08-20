@@ -2,9 +2,11 @@ package flyingperson.BetterPipes;
 
 import flyingperson.BetterPipes.client.GridRenderer;
 import flyingperson.BetterPipes.compat.CompatBase;
+import flyingperson.BetterPipes.compat.CompatEnderIO;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.ConnectionGrid;
 import flyingperson.BetterPipes.network.MessageGetConnections;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.EnumFacing;
@@ -25,36 +27,37 @@ public class BetterPipesEventHandler {
             if (i.isModLoaded()) {
                 BlockPos pos = event.getPos();
                 if (event.getWorld().getBlockState(pos).getBlock().hasTileEntity(event.getWorld().getBlockState(pos))) {
-                    for (EnumFacing j : EnumFacing.VALUES) {
+                    if (i.isAcceptable(event.getWorld().getTileEntity(pos))) {
+                        for (EnumFacing j : EnumFacing.VALUES) {
 
-                        i.disconnect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
-                        i.disconnect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                            i.disconnect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
+                            i.disconnect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
 
-                        System.out.println(event.getWorld().isRemote);
+                            boolean lookingAt = false;
 
-                        boolean lookingAt = false;
-
-                        RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
-                        RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
-
-
-                        if (rt1 != null) {
-                            if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
-                        }
-                        if (rt2 != null) {
-                            if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
-                        }
+                            RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                            RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
-                        if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
-                            System.out.println("Connected");
-                            i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
-                            i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                            if (rt1 != null) {
+                                if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
+                            }
+                            if (rt2 != null) {
+                                if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
+                            }
+
+
+                            if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
+                                i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
+                                i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                            }
                         }
                     }
                 }
             }
         }
+
+
     }
 
     @SubscribeEvent
@@ -67,7 +70,6 @@ public class BetterPipesEventHandler {
     public void onEvent(PlayerInteractEvent event) {
         if (event instanceof PlayerInteractEvent.RightClickItem | event instanceof  PlayerInteractEvent.RightClickBlock) {
             if (event.getEntityPlayer().getHeldItemMainhand().getItem() == ModItems.itemWrench && !event.getEntityPlayer().isSneaking()) {
-                System.out.println(event.getWorld().isRemote);
                 ItemWrench.wrenchUse(event);
                 event.setCanceled(true);
             }

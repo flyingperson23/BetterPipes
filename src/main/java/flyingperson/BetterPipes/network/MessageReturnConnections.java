@@ -1,11 +1,10 @@
 package flyingperson.BetterPipes.network;
 
 import flyingperson.BetterPipes.BetterPipes;
-import flyingperson.BetterPipes.Utils;
+import flyingperson.BetterPipes.util.Utils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

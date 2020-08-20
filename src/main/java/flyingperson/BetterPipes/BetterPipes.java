@@ -1,9 +1,6 @@
 package flyingperson.BetterPipes;
 
-import flyingperson.BetterPipes.compat.CompatBase;
-import flyingperson.BetterPipes.compat.CompatEnderIO;
-import flyingperson.BetterPipes.compat.CompatImmersiveEngineering;
-import flyingperson.BetterPipes.compat.CompatThermalExpansion;
+import flyingperson.BetterPipes.compat.*;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEEnergy;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
@@ -65,7 +62,8 @@ public class BetterPipes
             new CompatGTCEEnergy(),
             new CompatGTCEFluid(),
             new CompatGTCEItem(),
-            new CompatEnderIO()
+            new CompatEnderIO(),
+            new CompatAE2()
     };
 
 }
