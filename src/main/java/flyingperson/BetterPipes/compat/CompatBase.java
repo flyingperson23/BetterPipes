@@ -7,8 +7,6 @@ import net.minecraft.util.EnumFacing;
 import java.util.ArrayList;
 
 public abstract class CompatBase {
-    /** @return is the needed mod loaded?*/
-    public abstract boolean isModLoaded();
     /** @param te tileentity to check for connectability
      *  @param direction the direction in which to check connectability
      *  @return is there a connectable block in that direction? */
@@ -21,16 +19,10 @@ public abstract class CompatBase {
     public abstract boolean isAcceptable(TileEntity te);
     /** @param te tileentity to connect
      *  @param direction direction in which to connect
-     *  @param player the player connecting/disconnecting the pipe
-     *  @param hitX where should the mod think the pipe was hit on the x axis
-     *  @param hitY where should the mod think the pipe was hit on the y axis
-     *  @param hitZ where should the mod think the pipe was hit on the z axis*/
+     *  @param player the player connecting/disconnecting the pipe*/
     public abstract void connect(TileEntity te, EnumFacing direction, EntityPlayer player);
     /** @param te tileentity to disconnect
      *  @param direction the direction of the the tileentity to disconnect from te
-     *  @param player the player connecting/disconnecting the pipe
-     *  @param hitX where should the mod think the pipe was hit on the x axis
-     *  @param hitY where should the mod think the pipe was hit on the y axis
-     *  @param hitZ where should the mod think the pipe was hit on the z axis*/
+     *  @param player the player connecting/disconnecting the pipe*/
     public abstract void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player);
 }

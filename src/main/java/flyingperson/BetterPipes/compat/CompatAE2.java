@@ -18,10 +18,6 @@ import net.minecraftforge.fml.common.Loader;
 import java.util.ArrayList;
 
 public class CompatAE2 extends CompatBase {
-    @Override
-    public boolean isModLoaded() {
-        return Loader.isModLoaded("appliedenergistics2");
-    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {

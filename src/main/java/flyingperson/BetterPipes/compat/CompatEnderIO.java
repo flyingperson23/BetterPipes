@@ -12,10 +12,6 @@ import net.minecraftforge.fml.common.Loader;
 import java.util.ArrayList;
 
 public class CompatEnderIO extends CompatBase {
-    @Override
-    public boolean isModLoaded() {
-        return Loader.isModLoaded("enderio");
-    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {

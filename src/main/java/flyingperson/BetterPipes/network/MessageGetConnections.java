@@ -33,7 +33,7 @@ public class MessageGetConnections implements IMessage {
             BlockPos pos = message.pos;
             serverPlayer.getServerWorld().addScheduledTask(() -> {
                 if (serverPlayer.world.getTileEntity(pos) != null) {
-                    for (CompatBase compat : BetterPipes.COMPAT_LIST) {
+                    for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
                         TileEntity te = serverPlayer.world.getTileEntity(pos);
                         if (compat.isAcceptable(te)) {
                             ConnectionBlock connections = new ConnectionBlock(te.getPos(), compat.getConnections(te));

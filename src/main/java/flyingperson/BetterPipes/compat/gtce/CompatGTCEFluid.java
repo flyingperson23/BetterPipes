@@ -13,10 +13,6 @@ import net.minecraftforge.fml.common.Loader;
 import java.util.ArrayList;
 
 public class CompatGTCEFluid extends CompatBase {
-    @Override
-    public boolean isModLoaded() {
-        return Loader.isModLoaded("gregtech");
-    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {

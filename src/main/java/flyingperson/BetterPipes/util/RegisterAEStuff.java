@@ -5,15 +5,13 @@ import flyingperson.BetterPipes.BetterPipes;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class RegisterAEStuff {
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(new AEPartItem());
+        event.getRegistry().register(aepart);
     }
 
-    @GameRegistry.ObjectHolder("betterpipes:aepart")
-    public static AEPartItem aepart;
+    public static AEPartItem aepart = new AEPartItem();
 
     public static void registerPartModel() {
         AEApi.instance().registries().partModels().registerModels(new ResourceLocation(BetterPipes.MODID, "ae2part/blockpart" ));

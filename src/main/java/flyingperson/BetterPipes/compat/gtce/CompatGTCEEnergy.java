@@ -13,10 +13,6 @@ import net.minecraftforge.fml.common.Loader;
 import java.util.ArrayList;
 
 public class CompatGTCEEnergy extends CompatBase {
-    @Override
-    public boolean isModLoaded() {
-        return Loader.isModLoaded("gregtech");
-    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -51,6 +47,7 @@ public class CompatGTCEEnergy extends CompatBase {
 
             te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
             te.markDirty();
+            cable.notifyBlockUpdate();
         }
     }
 
@@ -62,6 +59,7 @@ public class CompatGTCEEnergy extends CompatBase {
 
             te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
             te.markDirty();
+            cable.notifyBlockUpdate();
         }
     }
 

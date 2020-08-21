@@ -23,61 +23,58 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BetterPipesEventHandler {
     @SubscribeEvent
     public void onEvent(BlockEvent.PlaceEvent event) {
-        for (CompatBase i : BetterPipes.COMPAT_LIST) {
-            if (i.isModLoaded()) {
-                BlockPos pos = event.getPos();
-                if (event.getWorld().getBlockState(pos).getBlock().hasTileEntity(event.getWorld().getBlockState(pos))) {
-                    if (i.isAcceptable(event.getWorld().getTileEntity(pos))) {
-                        for (EnumFacing j : EnumFacing.VALUES) {
+        for (CompatBase i : BetterPipes.instance.COMPAT_LIST) {
+            BlockPos pos = event.getPos();
+            if (event.getWorld().getBlockState(pos).getBlock().hasTileEntity(event.getWorld().getBlockState(pos))) {
+                if (i.isAcceptable(event.getWorld().getTileEntity(pos))) {
+                    for (EnumFacing j : EnumFacing.VALUES) {
 
-                            i.disconnect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
-                            i.disconnect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                        boolean lookingAt = false;
 
-                            boolean lookingAt = false;
-
-                            RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
-                            RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
+                        RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                        RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
-                            if (rt1 != null) {
-                                if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
-                            }
-                            if (rt2 != null) {
-                                if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
-                            }
+                        if (rt1 != null) {
+                            if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
+                        }
+                        if (rt2 != null) {
+                            if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(j, 1))) lookingAt = true;
+                        }
 
-
-                            if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
-                                if (i.canConnect(event.getWorld().getTileEntity(pos), j)) {
-                                    i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
-                                    i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
-                                }
+                        if (i.canConnect(event.getWorld().getTileEntity(pos), j)) {
+                            if ((lookingAt & BPConfig.general.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & BPConfig.general.sneaking_makes_pipes_connect)) {
+                                i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
+                                i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                            } else {
+                                i.disconnect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
+                                i.disconnect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
                             }
                         }
-                    } else {
-                        for (EnumFacing facing : EnumFacing.VALUES) {
-                            TileEntity side = event.getWorld().getTileEntity(pos.offset(facing, 1));
-                            if (side != null) {
-                                if (i.isAcceptable(side)) {
+                    }
+                } else {
+                    for (EnumFacing facing : EnumFacing.VALUES) {
+                        TileEntity side = event.getWorld().getTileEntity(pos.offset(facing, 1));
+                        if (side != null) {
+                            if (i.isAcceptable(side)) {
 
-                                    boolean lookingAt = false;
+                                boolean lookingAt = false;
 
-                                    RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
-                                    RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
+                                RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                                RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
-                                    if (rt1 != null) {
-                                        if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing,1))) lookingAt = true;
-                                    }
-                                    if (rt2 != null) {
-                                        if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
-                                    }
+                                if (rt1 != null) {
+                                    if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing,1))) lookingAt = true;
+                                }
+                                if (rt2 != null) {
+                                    if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
+                                }
 
-                                    if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
-                                        i.connect(side, facing.getOpposite(), event.getPlayer());
-                                    } else {
-                                        i.disconnect(side, facing.getOpposite(), event.getPlayer());
-                                    }
+                                if ((lookingAt & BPConfig.general.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & BPConfig.general.sneaking_makes_pipes_connect)) {
+                                    i.connect(side, facing.getOpposite(), event.getPlayer());
+                                } else {
+                                    i.disconnect(side, facing.getOpposite(), event.getPlayer());
                                 }
                             }
                         }
@@ -113,7 +110,7 @@ public class BetterPipesEventHandler {
             RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
             if (lookingAt != null) {
                 BlockPos pos = lookingAt.getBlockPos();
-                for (CompatBase compat : BetterPipes.COMPAT_LIST) {
+                for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
                     if (compat.isAcceptable(player.world.getTileEntity(pos))) {
                         if (player.getHeldItemMainhand().getItem() == ModItems.itemWrench) {
                             BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos));

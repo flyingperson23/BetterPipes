@@ -16,12 +16,6 @@ import java.util.ArrayList;
 public class CompatThermalExpansion extends CompatBase {
 
     @Override
-    public boolean isModLoaded() {
-        return Loader.isModLoaded("thermaldynamics");
-    }
-
-
-    @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (te != null) {
             BlockPos connectTo = te.getPos().offset(direction, 1);

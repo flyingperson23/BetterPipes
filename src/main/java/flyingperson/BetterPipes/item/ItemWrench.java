@@ -34,7 +34,7 @@ public class ItemWrench extends Item implements IBetterPipesWrench {
         World worldIn = event.getWorld();
         event.getWorld().playSound(event.getEntityPlayer(), event.getPos(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
         event.getEntityPlayer().swingArm(EnumHand.MAIN_HAND);
-        for (CompatBase compat : BetterPipes.COMPAT_LIST) {
+        for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
             RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
             if (lookingAt != null) {
                 BlockPos pos = lookingAt.getBlockPos();

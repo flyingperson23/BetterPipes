@@ -7,6 +7,9 @@ import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.proxy.CommonProxy;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -14,16 +17,19 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
 
 @Mod(modid = BetterPipes.MODID, name = BetterPipes.NAME, version = BetterPipes.VERSION, dependencies = "required:codechickenlib; after:appliedenergistics2")
 public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
 
     public static Logger logger;
 
@@ -57,16 +63,25 @@ public class BetterPipes
     public void postInit(FMLPostInitializationEvent event)
     {
         proxy.postInit(event);
+        if (Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalExpansion());
+        if (Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());
+        if (Loader.isModLoaded("appliedenergistics2")) COMPAT_LIST.add(new CompatAE2());
+        if (Loader.isModLoaded("gregtech")) {
+            COMPAT_LIST.add(new CompatGTCEItem());
+            COMPAT_LIST.add(new CompatGTCEFluid());
+            COMPAT_LIST.add(new CompatGTCEEnergy());
+        }
     }
 
-    public static final CompatBase[] COMPAT_LIST = {
-            new CompatThermalExpansion(),
-            new CompatImmersiveEngineering(),
-            new CompatGTCEEnergy(),
-            new CompatGTCEFluid(),
-            new CompatGTCEItem(),
-            new CompatEnderIO(),
-            new CompatAE2()
-    };
+    @SubscribeEvent
+    public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
+    {
+        if (event.getModID().equals(MODID))
+        {
+            ConfigManager.sync(MODID, Config.Type.INSTANCE);
+        }
+    }
+
+    public ArrayList<CompatBase> COMPAT_LIST = new ArrayList<>();
 
 }

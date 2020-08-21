@@ -1,22 +1,15 @@
 package flyingperson.BetterPipes.compat;
 
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityFluidPipe;
-import cofh.thermaldynamics.duct.tiles.TileGrid;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.common.Loader;
 
 import java.util.ArrayList;
 
 public class CompatImmersiveEngineering extends CompatBase {
-
-    @Override
-    public boolean isModLoaded() {
-        return Loader.isModLoaded("immersiveengineering");
-    }
-
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -29,19 +22,25 @@ public class CompatImmersiveEngineering extends CompatBase {
 
     @Override
     public void connect(TileEntity te, EnumFacing direction, EntityPlayer player) {
-        if (canConnect(te, direction)) {
-            if (te instanceof TileEntityFluidPipe) {
-                TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
+        if (te.getWorld().isRemote) {
+            if (canConnect(te, direction)) {
+                if (te instanceof TileEntityFluidPipe) {
+                    TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
 
 
+                    //getInfo(pipe);
+                    System.out.println("connect" + te.getWorld().isRemote);
+                    pipe.sideConfig[direction.getIndex()] = 0;
 
-                getInfo(pipe);
+                    if (!getConnections(te).contains(direction)) toggleSide(pipe, direction.getIndex());
 
 
+                    te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                    te.markDirty();
 
 
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                    pipe.markContainingBlockForUpdate(null);
+                }
             }
         }
     }
@@ -49,24 +48,36 @@ public class CompatImmersiveEngineering extends CompatBase {
 
     public void getInfo(TileEntityFluidPipe te) {
         for (EnumFacing e : EnumFacing.VALUES) {
+            System.out.println(te.getPos());
             System.out.println(e);
             System.out.println(te.sideConfig[e.getIndex()]);
-            System.out.println(te.getConnectionStyle(e.getIndex()));
+            System.out.println(te.getAvailableConnectionByte());
+            System.out.println(te.hasOutputConnection(e));
+            System.out.println();
         }
     }
 
     @Override
     public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
-        if (canConnect(te, direction)) {
-            if (te instanceof TileEntityFluidPipe) {
-                TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
+        if (te.getWorld().isRemote) {
+            if (canConnect(te, direction)) {
+                if (te instanceof TileEntityFluidPipe) {
+                    TileEntityFluidPipe pipe = (TileEntityFluidPipe) te;
 
-                getInfo(pipe);
+                    System.out.println("disconnect" + te.getWorld().isRemote);
+
+                    //getInfo(pipe);
+
+                    pipe.sideConfig[direction.getIndex()] = -1;
+                    if (getConnections(te).contains(direction)) toggleSide(pipe, direction.getIndex());
 
 
+                    te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                    te.markDirty();
 
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                    pipe.markContainingBlockForUpdate(null);
+
+                }
             }
         }
     }
@@ -79,7 +90,6 @@ public class CompatImmersiveEngineering extends CompatBase {
             for (EnumFacing e : EnumFacing.VALUES) {
                 if (grid.getConnectionStyle(e.getIndex()) != 0) {
                     connections.add(e);
-                    System.out.println(e);
                 }
             }
         }
@@ -89,5 +99,24 @@ public class CompatImmersiveEngineering extends CompatBase {
     @Override
     public boolean isAcceptable(TileEntity te) {
         return te instanceof TileEntityFluidPipe;
+    }
+
+
+    public void toggleSide(TileEntityFluidPipe pipe, int side)
+    {
+        //pipe.sideConfig[side]++;
+        //if(pipe.sideConfig[side] > 0)
+        //    pipe.sideConfig[side] = -1;
+        pipe.markDirty();
+
+        //EnumFacing fd = Utils.fromIndex(side);
+        //TileEntity connected = pipe.getWorld().getTileEntity(pipe.getPos().offset(fd));
+        //if(connected instanceof TileEntityFluidPipe) {
+        //    ((TileEntityFluidPipe)connected).sideConfig[fd.getOpposite().ordinal()] = pipe.sideConfig[side];
+        //    connected.markDirty();
+        //    pipe.getWorld().addBlockEvent(pipe.getPos().offset(fd), pipe.getBlockType(), 0, 0);
+        //}
+        pipe.updateConnectionByte(Utils.fromIndex(side));
+        pipe.getWorld().addBlockEvent(pipe.getPos(), pipe.getBlockType(), 0, 0);
     }
 }
