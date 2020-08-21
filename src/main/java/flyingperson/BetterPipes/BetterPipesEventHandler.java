@@ -2,13 +2,13 @@ package flyingperson.BetterPipes;
 
 import flyingperson.BetterPipes.client.GridRenderer;
 import flyingperson.BetterPipes.compat.CompatBase;
-import flyingperson.BetterPipes.compat.CompatEnderIO;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.ConnectionGrid;
 import flyingperson.BetterPipes.network.MessageGetConnections;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -48,8 +48,37 @@ public class BetterPipesEventHandler {
 
 
                             if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
-                                i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
-                                i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                                if (i.canConnect(event.getWorld().getTileEntity(pos), j)) {
+                                    i.connect(event.getWorld().getTileEntity(pos), j, event.getPlayer());
+                                    i.connect(event.getWorld().getTileEntity(pos.offset(j, 1)), j.getOpposite(), event.getPlayer());
+                                }
+                            }
+                        }
+                    } else {
+                        for (EnumFacing facing : EnumFacing.VALUES) {
+                            TileEntity side = event.getWorld().getTileEntity(pos.offset(facing, 1));
+                            if (side != null) {
+                                if (i.isAcceptable(side)) {
+
+                                    boolean lookingAt = false;
+
+                                    RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                                    RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
+
+
+                                    if (rt1 != null) {
+                                        if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing,1))) lookingAt = true;
+                                    }
+                                    if (rt2 != null) {
+                                        if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
+                                    }
+
+                                    if ((lookingAt & Config.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & Config.sneaking_makes_pipes_connect)) {
+                                        i.connect(side, facing.getOpposite(), event.getPlayer());
+                                    } else {
+                                        i.disconnect(side, facing.getOpposite(), event.getPlayer());
+                                    }
+                                }
                             }
                         }
                     }

@@ -1,8 +1,6 @@
 package flyingperson.BetterPipes.compat;
 
-import appeng.me.cache.helpers.Connections;
 import crazypants.enderio.base.conduit.ConnectionMode;
-import crazypants.enderio.base.conduit.IClientConduit;
 import crazypants.enderio.base.conduit.IConduit;
 import crazypants.enderio.base.conduit.IServerConduit;
 import crazypants.enderio.conduits.conduit.TileConduitBundle;
@@ -52,7 +50,6 @@ public class CompatEnderIO extends CompatBase {
 
     private boolean canConnectToConduit(IServerConduit conduit, TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
-            TileConduitBundle tile = (TileConduitBundle) te;
             TileEntity connectTo = te.getWorld().getTileEntity(te.getPos().offset(direction, 1));
             if (isAcceptable(connectTo)) {
                 TileConduitBundle connectToConduit = (TileConduitBundle) connectTo;

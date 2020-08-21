@@ -28,29 +28,29 @@ import java.util.Random;
 public class AEBlockPart implements IPart {
 
     @PartModels
-    public static final PartModel DEFAULT_MODELS = new PartModel(false, new ResourceLocation(BetterPipes.MODID, "ae2part/blockpart" ) );
+    public static final PartModel DEFAULT_MODELS = new PartModel(false, new ResourceLocation(BetterPipes.MODID, "ae2part/blockpart" ));
 
-    private ItemStack is;
     private IPartHost host = null;
     private AEPartLocation mySide = AEPartLocation.UP;
 
-    public AEBlockPart( final ItemStack is ) {
-        this.is = is;
+    public AEBlockPart() {
+
     }
+
 
     @Override
     public void getBoxes( final IPartCollisionHelper bch ) {
-        if( this.host != null && this.host.getFacadeContainer().getFacade( this.mySide ) != null ) {
-            bch.addBox( 8, 8, 8, 8, 8, 8 );
-        }
-        else {
-            bch.addBox( 8, 8, 8, 8, 8, 8 );
-        }
+        //bch.addBox(0, 0, 0, 16, 16, 16);
+        //bch.addBox(8, 8, 8, 8, 8, 8);
+        //bch.addBox(7.0D, 7.0D, 10.0D, 9.0D, 9.0D, 16.0D);
+
+
+        bch.addBox(8.0D, 8.0D, 16.0D, 8.0D, 8.0D, 16.0D);
     }
 
     @Override
     public ItemStack getItemStack( final PartItemStack wrenched ) {
-        return this.is;
+        return new ItemStack(RegisterAEStuff.aepart, 1);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AEBlockPart implements IPart {
 
     @Override
     public boolean isSolid() {
-        return false;
+        return true;
     }
 
     @Override
@@ -120,7 +120,6 @@ public class AEBlockPart implements IPart {
 
     @Override
     public void onEntityCollision( final Entity entity ) {
-
     }
 
     @Override
@@ -130,7 +129,6 @@ public class AEBlockPart implements IPart {
 
     @Override
     public void addToWorld() {
-
     }
 
     @Override
@@ -156,7 +154,7 @@ public class AEBlockPart implements IPart {
 
     @Override
     public void getDrops(final List<ItemStack> drops, final boolean wrenched ) {
-
+        drops.removeIf(i -> i.getItem() == RegisterAEStuff.aepart);
     }
 
     @Override
@@ -176,7 +174,7 @@ public class AEBlockPart implements IPart {
 
     @Override
     public boolean canBePlacedOn( final BusSupport what ) {
-        return what == BusSupport.CABLE || what == BusSupport.DENSE_CABLE;
+        return what == BusSupport.DENSE_CABLE;
     }
 
     @Override

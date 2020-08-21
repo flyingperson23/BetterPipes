@@ -6,10 +6,12 @@ import flyingperson.BetterPipes.ModSounds;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.MessageGetConnections;
 import flyingperson.BetterPipes.network.MessageReturnConnections;
+import flyingperson.BetterPipes.util.RegisterAEStuff;
 import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -46,6 +48,7 @@ public class CommonProxy {
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new ItemWrench());
+        if (Loader.isModLoaded("appliedenergistics2")) RegisterAEStuff.registerItems(event);
     }
 
     @SubscribeEvent
