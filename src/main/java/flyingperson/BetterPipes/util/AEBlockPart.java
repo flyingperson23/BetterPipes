@@ -40,11 +40,6 @@ public class AEBlockPart implements IPart {
 
     @Override
     public void getBoxes( final IPartCollisionHelper bch ) {
-        //bch.addBox(0, 0, 0, 16, 16, 16);
-        //bch.addBox(8, 8, 8, 8, 8, 8);
-        //bch.addBox(7.0D, 7.0D, 10.0D, 9.0D, 9.0D, 16.0D);
-
-
         bch.addBox(8.0D, 8.0D, 16.0D, 8.0D, 8.0D, 16.0D);
     }
 
