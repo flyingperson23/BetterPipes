@@ -26,8 +26,8 @@ public class CompatEnderIO extends CompatBase {
                 if (isAcceptable(connectTo)) {
                     TileConduitBundle connectToConduit = (TileConduitBundle) connectTo;
                     if (connectToConduit != null) {
-                        if (connectToConduit.getConduit(conduit.getClass()) != null) {
-                            if (conduit.canConnectToConduit(direction, connectToConduit.getConduit(conduit.getClass()))) return true;
+                        for (IServerConduit conduit2 : connectToConduit.getServerConduits()) {
+                            if (conduit.getBaseConduitType() == conduit2.getBaseConduitType()) return true;
                         }
                     }
                 } else {
@@ -54,8 +54,8 @@ public class CompatEnderIO extends CompatBase {
             if (isAcceptable(connectTo)) {
                 TileConduitBundle connectToConduit = (TileConduitBundle) connectTo;
                 if (connectToConduit != null) {
-                    if (connectToConduit.getConduit(conduit.getClass()) != null) {
-                        return conduit.canConnectToConduit(direction, connectToConduit.getConduit(conduit.getClass()));
+                    for (IServerConduit conduit2 : connectToConduit.getServerConduits()) {
+                        if (conduit.getBaseConduitType() == conduit2.getBaseConduitType()) return true;
                     }
                 }
             }
@@ -90,7 +90,10 @@ public class CompatEnderIO extends CompatBase {
         if (isAcceptable(te)) {
             TileConduitBundle tile = (TileConduitBundle) te;
             for (IServerConduit conduit : tile.getServerConduits()) {
-                if (canConnectToConduit(conduit, te, direction)) conduit.conduitConnectionAdded(direction);
+                if (canConnectToConduit(conduit, te, direction)) {
+                    conduit.setConnectionMode(direction, ConnectionMode.NOT_SET);
+                    conduit.conduitConnectionAdded(direction);
+                }
                 else if (canConnectExternally(conduit, te, direction)) {
                     conduit.externalConnectionAdded(direction);
                     if (conduit.supportsConnectionMode(ConnectionMode.IN_OUT)) conduit.setConnectionMode(direction, ConnectionMode.IN_OUT);
@@ -107,9 +110,12 @@ public class CompatEnderIO extends CompatBase {
         if (isAcceptable(te)) {
             TileConduitBundle tile = (TileConduitBundle) te;
             for (IServerConduit conduit : tile.getServerConduits()) {
-                if (conduit.getExternalConnections().contains(direction)) conduit.setConnectionMode(direction, ConnectionMode.DISABLED);
-                conduit.conduitConnectionRemoved(direction);
-                conduit.externalConnectionRemoved(direction);
+                if (!canConnectToConduit(conduit, te, direction)) {
+                    conduit.setConnectionMode(direction, ConnectionMode.DISABLED);
+                    conduit.externalConnectionRemoved(direction);
+                } else {
+                    conduit.conduitConnectionRemoved(direction);
+                }
                 conduit.connectionsChanged();
             }
             tile.markDirty();
