@@ -1,15 +1,21 @@
 package flyingperson.BetterPipes.util;
 
 import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.ModSounds;
+import flyingperson.BetterPipes.compat.CompatBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -512,4 +518,35 @@ public class Utils {
         }
         return null;
     }
+
+    public static void wrenchUse(PlayerInteractEvent event) {
+        EntityPlayer player = event.getEntityPlayer();
+        World worldIn = event.getWorld();
+        event.getWorld().playSound(event.getEntityPlayer(), event.getPos(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
+        event.getEntityPlayer().swingArm(EnumHand.MAIN_HAND);
+        for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
+            RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
+            if (lookingAt != null) {
+                BlockPos pos = lookingAt.getBlockPos();
+                TileEntity te = worldIn.getTileEntity(pos);
+                if (te != null) {
+                    if (compat.isAcceptable(te)) {
+                        if (!player.isSneaking()) {
+                            EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+                            if (compat.getConnections(te).contains(sideToggled)) {
+                                compat.disconnect(te, sideToggled, player);
+                                compat.disconnect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
+                            } else {
+                                compat.connect(te, sideToggled, player);
+                                compat.connect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
+                            }
+                            worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
+                            te.markDirty();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

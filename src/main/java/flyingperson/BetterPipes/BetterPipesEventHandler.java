@@ -95,9 +95,15 @@ public class BetterPipesEventHandler {
     @SubscribeEvent
     public void onEvent(PlayerInteractEvent event) {
         if (event instanceof PlayerInteractEvent.RightClickItem | event instanceof  PlayerInteractEvent.RightClickBlock) {
-            if (event.getEntityPlayer().getHeldItemMainhand().getItem() == ModItems.itemWrench && !event.getEntityPlayer().isSneaking()) {
-                ItemWrench.wrenchUse(event);
-                event.setCanceled(true);
+            if (event.getEntityPlayer().getHeldItemMainhand().getItem() instanceof IBetterPipesWrench && !event.getEntityPlayer().isSneaking()) {
+                RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(event.getEntityPlayer());
+                for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
+                    if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
+                        Utils.wrenchUse(event);
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
             }
         }
     }
