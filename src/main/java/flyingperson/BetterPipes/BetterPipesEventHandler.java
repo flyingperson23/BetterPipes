@@ -124,7 +124,7 @@ public class BetterPipesEventHandler {
                 BlockPos pos = lookingAt.getBlockPos();
                 for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
                     if (compat.isAcceptable(player.world.getTileEntity(pos))) {
-                        if (player.getHeldItemMainhand().getItem() == ModItems.itemWrench) {
+                        if (player.getHeldItemMainhand().getItem() instanceof IBetterPipesWrench) {
                             BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos));
                             if (ConnectionGrid.instance() != null) {
                                 if (ConnectionGrid.instance().get(pos) != null) {
