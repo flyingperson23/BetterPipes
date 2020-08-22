@@ -1,6 +1,6 @@
 package flyingperson.BetterPipes;
 
-import flyingperson.BetterPipes.client.GridRenderer;
+import flyingperson.BetterPipes.client.Renderer;
 import flyingperson.BetterPipes.compat.CompatBase;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.ConnectionGrid;
@@ -116,9 +116,10 @@ public class BetterPipesEventHandler {
                             BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos));
                             if (ConnectionGrid.instance() != null) {
                                 if (ConnectionGrid.instance().get(pos) != null) {
-                                    GridRenderer.render(player, pos, lookingAt.sideHit, event.getPartialTicks(), ConnectionGrid.instance().get(pos).connections);
+                                    Renderer.renderOverlay(player, pos, lookingAt.sideHit, event.getPartialTicks(), ConnectionGrid.instance().get(pos).connections);
                                     EnumFacing directionHovered = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
-                                    GridRenderer.renderSide(player, pos, directionHovered, event.getPartialTicks());
+                                    if (BPConfig.visual.highlight_wrench_hover) Renderer.renderSide(player, pos, directionHovered, event.getPartialTicks(),  0.5F);
+                                    if (BPConfig.visual.block_outline && directionHovered != null) Renderer.drawOutline(player, pos.offset(directionHovered, 1), event.getPartialTicks());
                                 }
                             }
                         }

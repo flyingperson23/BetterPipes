@@ -1,9 +1,19 @@
 package flyingperson.BetterPipes.client;
 
 import flyingperson.BetterPipes.BetterPipes;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -11,9 +21,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 
 @SideOnly(Side.CLIENT)
-public class GridRenderer {
+public class Renderer {
 
-    public static void render(EntityPlayer aPlayer, BlockPos pos, EnumFacing aSide, float aPartialTicks, ArrayList<EnumFacing> connections)
+    public static void renderOverlay(EntityPlayer aPlayer, BlockPos pos, EnumFacing aSide, float aPartialTicks, ArrayList<EnumFacing> connections)
     {
         int aX = pos.getX();
         int aY = pos.getY();
@@ -377,7 +387,7 @@ public class GridRenderer {
 
 
 
-    public static void renderSide(EntityPlayer aPlayer, BlockPos pos, EnumFacing aSide, float aPartialTicks)
+    public static void renderSide(EntityPlayer aPlayer, BlockPos pos, EnumFacing aSide, float aPartialTicks, float d)
     {
         int aX = pos.getX();
         int aY = pos.getY();
@@ -410,15 +420,37 @@ public class GridRenderer {
         double tColor = (animation % 42 < 21 ? 0.25 + ((animation % 21)/40.0) : 0.75 - ((animation % 21)/40.0));
         GL11.glColor4d(tColor, tColor, tColor, 0.3);
 
-        GL11.glVertex3d(0.5, 0, 0.5);
-        GL11.glVertex3d(-0.5, 0, 0.5);
-        GL11.glVertex3d(-0.5, 0, -0.5);
-        GL11.glVertex3d(0.5, 0, -0.5);
+        GL11.glVertex3d(d, 0, d);
+        GL11.glVertex3d(-1*d, 0, d);
+        GL11.glVertex3d(-1*d, 0, -1*d);
+        GL11.glVertex3d(d, 0, -1*d);
 
         GL11.glEnd();
         GL11.glPopMatrix();
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    public static void drawOutline(EntityPlayer player, BlockPos pos, float partialTicks) {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.glLineWidth(2.0F);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+
+        double animation = (double) BetterPipes.instance.counter / 10;
+        float color = (float) (animation % 42 < 21 ? 0.25 + ((animation % 21)/40.0) : 0.75 - ((animation % 21)/40.0))/255;
+
+        GlStateManager.color(color, color, color, 0.3F);
+
+        Vec3d pos2 = new Vec3d(player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks, player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks, player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks).scale(-1);
+        RenderGlobal.renderFilledBox(Block.FULL_BLOCK_AABB.offset(pos).expand(0.002, 0.002, 0.002).offset(pos2), color, color, color, 1);
+        RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset(pos).expand(0.002, 0.002, 0.002).offset(pos2), color, color, color, 1);
+
+        GlStateManager.depthMask(true);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
     }
 
 }
