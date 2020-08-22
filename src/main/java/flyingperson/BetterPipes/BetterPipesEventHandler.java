@@ -102,7 +102,7 @@ public class BetterPipesEventHandler {
                 RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(event.getEntityPlayer());
                 for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
                     if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
-                        if (((IBetterPipesWrench) held.getItem()).canBeUsed()) {
+                        if (((IBetterPipesWrench) held.getItem()).canBeUsed(held)) {
                             ((IBetterPipesWrench) held.getItem()).damage(held);
                             Utils.wrenchUse(event);
                             event.setCanceled(true);

@@ -22,8 +22,8 @@ public class ItemWrench extends Item implements IBetterPipesWrench {
     }
 
     @Override
-    public boolean canBeUsed() {
-        return true;
+    public boolean canBeUsed(ItemStack stack) {
+        return stack.getItem() instanceof ItemWrench;
     }
 
     @Override
