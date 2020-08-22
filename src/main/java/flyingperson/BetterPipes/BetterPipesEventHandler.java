@@ -8,6 +8,8 @@ import flyingperson.BetterPipes.network.MessageGetConnections;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -95,13 +97,17 @@ public class BetterPipesEventHandler {
     @SubscribeEvent
     public void onEvent(PlayerInteractEvent event) {
         if (event instanceof PlayerInteractEvent.RightClickItem | event instanceof  PlayerInteractEvent.RightClickBlock) {
-            if (event.getEntityPlayer().getHeldItemMainhand().getItem() instanceof IBetterPipesWrench && !event.getEntityPlayer().isSneaking()) {
+            ItemStack held = event.getEntityPlayer().getHeldItemMainhand();
+            if (held.getItem() instanceof IBetterPipesWrench && !event.getEntityPlayer().isSneaking()) {
                 RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(event.getEntityPlayer());
                 for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
                     if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
-                        Utils.wrenchUse(event);
-                        event.setCanceled(true);
-                        return;
+                        if (((IBetterPipesWrench) held.getItem()).canBeUsed()) {
+                            ((IBetterPipesWrench) held.getItem()).damage(held);
+                            Utils.wrenchUse(event);
+                            event.setCanceled(true);
+                            return;
+                        }
                     }
                 }
             }

@@ -1,6 +1,8 @@
 package flyingperson.BetterPipes;
 
+import net.minecraft.item.ItemStack;
+
 public interface IBetterPipesWrench {
-    boolean canDamage();
-    void damage();
+    boolean canBeUsed();
+    void damage(ItemStack stack);
 }
