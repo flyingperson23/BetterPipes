@@ -6,6 +6,7 @@ import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.proxy.CommonProxy;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -39,6 +40,7 @@ public class BetterPipes
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("betterpipes");
 
     public int counter = 0;
+    public Utils utilsInsance = new Utils();
 
     @SidedProxy(clientSide = "flyingperson.BetterPipes.proxy.ClientProxy", serverSide = "flyingperson.BetterPipes.proxy.ServerProxy")
     public static CommonProxy proxy;
@@ -60,8 +62,7 @@ public class BetterPipes
     }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
+    public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
         if (Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalExpansion());
         if (Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());

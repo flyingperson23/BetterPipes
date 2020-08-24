@@ -4,12 +4,17 @@ import crazypants.enderio.base.conduit.ConnectionMode;
 import crazypants.enderio.base.conduit.IConduit;
 import crazypants.enderio.base.conduit.IServerConduit;
 import crazypants.enderio.conduits.conduit.TileConduitBundle;
+import crazypants.enderio.conduits.init.ConduitObject;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.common.Loader;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CompatEnderIO extends CompatBase {
 
@@ -116,5 +121,29 @@ public class CompatEnderIO extends CompatBase {
             }
             tile.markDirty();
         }
+    }
+
+    @Override
+    public Collection<ItemStack> getDrops(TileEntity te, IBlockState blockState) {
+        ArrayList<ItemStack> drops = new ArrayList<>();
+        if (isAcceptable(te)) {
+            TileConduitBundle tile = (TileConduitBundle) te;
+            for (IServerConduit conduit : tile.getServerConduits()) {
+                drops.addAll(conduit.getDrops());
+            }
+        }
+        return drops;
+    }
+
+    @Override
+    public List<Block> getAcceptedBlocks() {
+        ArrayList<Block> accepted = new ArrayList<>();
+        accepted.add(ConduitObject.block_conduit_bundle.getBlock());
+        return accepted;
+    }
+
+    @Override
+    public float getBreakSpeed() {
+        return 30f;
     }
 }

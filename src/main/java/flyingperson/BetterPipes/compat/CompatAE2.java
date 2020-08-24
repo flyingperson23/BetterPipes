@@ -9,13 +9,16 @@ import appeng.parts.networking.PartDenseCable;
 import appeng.tile.networking.TileCableBus;
 import flyingperson.BetterPipes.util.AEBlockPart;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.common.Loader;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CompatAE2 extends CompatBase {
 
@@ -90,5 +93,25 @@ public class CompatAE2 extends CompatBase {
                 }
             }
         }
+    }
+
+    @Override
+    public Collection<ItemStack> getDrops(TileEntity te, IBlockState blockState) {
+        if (isAcceptable(te)) {
+            return ((TileCableBus) te).getCableBus().getDrops(new ArrayList<>());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Block> getAcceptedBlocks() {
+        ArrayList<Block> accepted = new ArrayList<>();
+        if (AEApi.instance().definitions().blocks().multiPart().maybeBlock().isPresent()) accepted.add(AEApi.instance().definitions().blocks().multiPart().maybeBlock().get());
+        return accepted;
+    }
+
+    @Override
+    public float getBreakSpeed() {
+        return 30f;
     }
 }

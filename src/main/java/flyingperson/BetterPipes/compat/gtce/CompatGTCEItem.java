@@ -4,13 +4,17 @@ import flyingperson.BetterPipes.util.Utils;
 import flyingperson.BetterPipes.compat.CompatBase;
 import gregtech.api.pipenet.tile.AttachmentType;
 import gregtech.common.pipelike.inventory.tile.TileEntityInventoryPipe;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CompatGTCEItem extends CompatBase {
 
@@ -61,4 +65,19 @@ public class CompatGTCEItem extends CompatBase {
         }
     }
 
+    @Override
+    public Collection<ItemStack> getDrops(TileEntity te, IBlockState blockState) {
+        return te.getBlockType().getDrops(te.getWorld(), te.getPos(), blockState, 0);
+    }
+
+    @Override
+    public List<Block> getAcceptedBlocks() {
+        ArrayList<Block> accepted = new ArrayList<>();
+        return accepted;
+    }
+
+    @Override
+    public float getBreakSpeed() {
+        return 40f;
+    }
 }

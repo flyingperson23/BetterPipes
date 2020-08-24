@@ -1,10 +1,15 @@
 package flyingperson.BetterPipes.compat;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class CompatBase {
     /** @param te tileentity to check for connectability
@@ -25,4 +30,12 @@ public abstract class CompatBase {
      *  @param direction the direction of the the tileentity to disconnect from te
      *  @param player the player connecting/disconnecting the pipe*/
     public abstract void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player);
+    /**@param te tileentity to get drops from
+     * @param blockState state to get drops from
+     * @return list of drops te should drop*/
+    public abstract Collection<ItemStack> getDrops(TileEntity te, IBlockState blockState);
+    /**@return list of blocks from this compat module that can be broken with a wrench*/
+    public abstract List<Block> getAcceptedBlocks();
+    /**@return harvest speed for blocks from this module*/
+    public abstract float getBreakSpeed();
 }

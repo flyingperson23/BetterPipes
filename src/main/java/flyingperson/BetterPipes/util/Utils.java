@@ -6,9 +6,8 @@ import flyingperson.BetterPipes.compat.CompatBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -19,8 +18,15 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Utils {
+    public Utils() {
+        wrenchMap = new ArrayList<>();
+    }
+
+    public ArrayList<BlockPos> wrenchMap;
+
     public static boolean arePosEqual(BlockPos pos1, BlockPos pos2) {
         return pos1.getX() == pos2.getX() & pos1.getY() == pos2.getY() & pos1.getZ() == pos2.getZ();
     }
@@ -519,6 +525,14 @@ public class Utils {
         return null;
     }
 
+    public static void dropItem(ItemStack stack, EntityPlayer player) {
+        if (!player.addItemStackToInventory(stack)) player.dropItem(stack, true);
+    }
+
+    public static void dropItems(Collection<ItemStack> items, EntityPlayer player) {
+        for (ItemStack item : items) dropItem(item, player);
+    }
+
     public static void wrenchUse(PlayerInteractEvent event) {
         EntityPlayer player = event.getEntityPlayer();
         World worldIn = event.getWorld();
@@ -542,11 +556,11 @@ public class Utils {
                             }
                             worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
                             te.markDirty();
+                            return;
                         }
                     }
                 }
             }
         }
     }
-
 }

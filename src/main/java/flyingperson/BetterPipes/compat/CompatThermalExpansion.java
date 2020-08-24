@@ -1,17 +1,26 @@
 package flyingperson.BetterPipes.compat;
 
+import cofh.thermaldynamics.block.BlockDuct;
+import cofh.thermaldynamics.duct.Attachment;
 import cofh.thermaldynamics.duct.ConnectionType;
+import cofh.thermaldynamics.duct.attachments.cover.Cover;
 import cofh.thermaldynamics.duct.tiles.*;
+import cofh.thermaldynamics.init.TDBlocks;
+import flyingperson.BetterPipes.util.Utils;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CompatThermalExpansion extends CompatBase {
 
@@ -56,13 +65,39 @@ public class CompatThermalExpansion extends CompatBase {
             if (te instanceof TileGrid) {
                 TileGrid grid = (TileGrid) te;
 
-                grid.setConnectionType(direction.getIndex(), ConnectionType.BLOCKED);
+                boolean flag = true;
+                if (grid.attachmentData != null) {
+                    if (grid.attachmentData.attachments != null) {
+                        for (Attachment a : grid.attachmentData.attachments) {
+                            if (a != null) {
+                                if (Utils.fromIndex(a.side) == direction) {
+                                    flag = false;
+                                }
+                            }
+                        }
+                    }
+                    if (grid.attachmentData.covers != null) {
+                        for (Cover c : grid.attachmentData.covers) {
+                            if (c != null) {
+                                if (Utils.fromIndex(c.side) == direction) {
+                                    flag = false;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (flag) grid.setConnectionType(direction.getIndex(), ConnectionType.BLOCKED);
 
                 grid.updateLighting();
             }
             te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
             te.markDirty();
         }
+    }
+
+    @Override
+    public Collection<ItemStack> getDrops(TileEntity te, IBlockState blockState) {
+        return te.getBlockType().getDrops(te.getWorld(), te.getPos(), blockState, 0);
     }
 
     @Override
@@ -75,6 +110,22 @@ public class CompatThermalExpansion extends CompatBase {
                     connections.add(e);
                 }
             }
+            if (grid.attachmentData != null) {
+                if (grid.attachmentData.attachments != null) {
+                    for (Attachment a : grid.attachmentData.attachments) {
+                        if (a != null) {
+                            if (Utils.fromIndex(a.side) != null) connections.add(Utils.fromIndex(a.side));
+                        }
+                    }
+                }
+                if (grid.attachmentData.covers != null) {
+                    for (Cover c : grid.attachmentData.covers) {
+                        if (c != null) {
+                            if (Utils.fromIndex(c.side) != null) connections.add(Utils.fromIndex(c.side));
+                        }
+                    }
+                }
+            }
         }
         return connections;
     }
@@ -82,5 +133,19 @@ public class CompatThermalExpansion extends CompatBase {
     @Override
     public boolean isAcceptable(TileEntity te) {
         return te instanceof TileGrid;
+    }
+
+    @Override
+    public List<Block> getAcceptedBlocks() {
+        ArrayList<Block> accepted = new ArrayList<>();
+        for (BlockDuct duct : TDBlocks.blockDuct) {
+            accepted.add(duct.getBlockState().getBlock());
+        }
+        return accepted;
+    }
+
+    @Override
+    public float getBreakSpeed() {
+        return 10f;
     }
 }

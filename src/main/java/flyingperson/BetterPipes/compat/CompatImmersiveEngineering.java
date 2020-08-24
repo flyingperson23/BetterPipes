@@ -1,13 +1,19 @@
 package flyingperson.BetterPipes.compat;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityFluidPipe;
 import flyingperson.BetterPipes.util.Utils;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CompatImmersiveEngineering extends CompatBase {
 
@@ -83,6 +89,11 @@ public class CompatImmersiveEngineering extends CompatBase {
     }
 
     @Override
+    public Collection<ItemStack> getDrops(TileEntity te, IBlockState blockState) {
+        return te.getBlockType().getDrops(te.getWorld(), te.getPos(), blockState, 0);
+    }
+
+    @Override
     public ArrayList<EnumFacing> getConnections(TileEntity te) {
         ArrayList<EnumFacing> connections = new ArrayList<>();
         if (te instanceof TileEntityFluidPipe) {
@@ -118,5 +129,17 @@ public class CompatImmersiveEngineering extends CompatBase {
         //}
         pipe.updateConnectionByte(Utils.fromIndex(side));
         pipe.getWorld().addBlockEvent(pipe.getPos(), pipe.getBlockType(), 0, 0);
+    }
+
+    @Override
+    public List<Block> getAcceptedBlocks() {
+        ArrayList<Block> accepted = new ArrayList<>();
+        accepted.add(IEContent.blockMetalDevice1);
+        return accepted;
+    }
+
+    @Override
+    public float getBreakSpeed() {
+        return 30f;
     }
 }
