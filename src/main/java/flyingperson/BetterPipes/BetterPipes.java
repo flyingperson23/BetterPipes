@@ -30,7 +30,7 @@ public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.6";
+    public static final String VERSION = "0.7";
 
     public static Logger logger;
 
@@ -40,7 +40,6 @@ public class BetterPipes
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("betterpipes");
 
     public int counter = 0;
-    public Utils utilsInsance = new Utils();
 
     @SidedProxy(clientSide = "flyingperson.BetterPipes.proxy.ClientProxy", serverSide = "flyingperson.BetterPipes.proxy.ServerProxy")
     public static CommonProxy proxy;

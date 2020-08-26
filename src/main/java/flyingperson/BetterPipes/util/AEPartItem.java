@@ -4,6 +4,7 @@ import appeng.api.parts.IPart;
 import appeng.api.parts.IPartItem;
 import flyingperson.BetterPipes.BetterPipes;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,8 +37,8 @@ public class AEPartItem extends Item implements IPartItem {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         if (stack.getItem() instanceof AEPartItem) {
-            tooltip.add("This item serves no purpose other than to block off AE2 cable connections");
-            tooltip.add("If you got this in survival mode, please report to mod author");
+            tooltip.add(I18n.format("betterpipes.tooltip.aepart1"));
+            tooltip.add(I18n.format("betterpipes.tooltip.aepart2"));
         }
     }
 
