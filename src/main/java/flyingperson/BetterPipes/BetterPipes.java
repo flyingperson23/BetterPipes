@@ -7,6 +7,7 @@ import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.proxy.CommonProxy;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
 import flyingperson.BetterPipes.util.Utils;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -25,12 +26,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
-@Mod(modid = BetterPipes.MODID, name = BetterPipes.NAME, version = BetterPipes.VERSION, dependencies = "required:codechickenlib; after:appliedenergistics2")
+@Mod(modid = BetterPipes.MODID, name = BetterPipes.NAME, version = BetterPipes.VERSION, dependencies = "required:codechickenlib; after:appliedenergistics2; after:buildcrafttransport")
 public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.7";
+    public static final String VERSION = "0.8";
 
     public static Logger logger;
 
@@ -44,17 +45,16 @@ public class BetterPipes
     @SidedProxy(clientSide = "flyingperson.BetterPipes.proxy.ClientProxy", serverSide = "flyingperson.BetterPipes.proxy.ServerProxy")
     public static CommonProxy proxy;
 
+    public ArrayList<BlockPos> wrenchMap = new ArrayList<>();
+
     @EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
+    public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
         proxy.preInit(event);
-        if (Loader.isModLoaded("appliedenergistics2")) RegisterAEStuff.registerPartModel();
     }
 
     @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new BetterPipesEventHandler());
         MinecraftForge.EVENT_BUS.register(this);
         proxy.init(event);
@@ -66,6 +66,7 @@ public class BetterPipes
         if (Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalExpansion());
         if (Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());
         if (Loader.isModLoaded("appliedenergistics2")) COMPAT_LIST.add(new CompatAE2());
+        if (Loader.isModLoaded("buildcrafttransport")) COMPAT_LIST.add(new CompatBC());
         if (Loader.isModLoaded("gregtech")) {
             COMPAT_LIST.add(new CompatGTCEItem());
             COMPAT_LIST.add(new CompatGTCEFluid());
@@ -74,10 +75,8 @@ public class BetterPipes
     }
 
     @SubscribeEvent
-    public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
-    {
-        if (event.getModID().equals(MODID))
-        {
+    public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.getModID().equals(MODID)) {
             ConfigManager.sync(MODID, Config.Type.INSTANCE);
         }
     }

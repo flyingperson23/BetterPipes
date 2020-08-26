@@ -15,9 +15,15 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -86,6 +92,12 @@ public class BetterPipesEventHandler {
     }
 
     @SubscribeEvent
+    public void onEvent(TickEvent event) {
+        BetterPipes.instance.counter++;
+        if (BetterPipes.instance.counter % 3 == 0) BetterPipes.instance.wrenchMap.clear();
+    }
+
+    @SubscribeEvent
     public void onEvent(BlockEvent.BreakEvent event) {
         if (event.getPlayer().getHeldItemMainhand().getItem() instanceof IBetterPipesWrench) {
             for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
@@ -106,15 +118,19 @@ public class BetterPipesEventHandler {
             if (event instanceof PlayerInteractEvent.RightClickItem | event instanceof PlayerInteractEvent.RightClickBlock) {
                 ItemStack held = event.getEntityPlayer().getHeldItemMainhand();
                 if (held.getItem() instanceof IBetterPipesWrench) {
+                    event.setCanceled(true);
                     RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(event.getEntityPlayer());
                     if (lookingAt != null) {
-                        for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
-                            if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
-                                if (((IBetterPipesWrench) held.getItem()).canBeUsed(held, event.getEntityPlayer())) {
-                                    ((IBetterPipesWrench) held.getItem()).damage(held, event.getEntityPlayer());
-                                    Utils.wrenchUse(event);
-                                    event.setCanceled(true);
-                                    return;
+                        if (!BetterPipes.instance.wrenchMap.contains(lookingAt.getBlockPos())) {
+                            BetterPipes.instance.wrenchMap.add(lookingAt.getBlockPos());
+                            for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
+                                if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
+                                    if (((IBetterPipesWrench) held.getItem()).canBeUsed(held, event.getEntityPlayer())) {
+                                        ((IBetterPipesWrench) held.getItem()).damage(held, event.getEntityPlayer());
+                                        Utils.wrenchUse(event);
+                                        event.setCanceled(true);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -122,6 +138,11 @@ public class BetterPipesEventHandler {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public void onEvent(LivingEntityUseItemEvent event) {
+        if (event.getItem().getItem() instanceof IBetterPipesWrench) event.setCanceled(true);
     }
 
     @SubscribeEvent

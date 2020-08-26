@@ -2,10 +2,18 @@ package flyingperson.BetterPipes.proxy;
 
 import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.ModSounds;
+import flyingperson.BetterPipes.compat.CompatAE2;
+import flyingperson.BetterPipes.compat.CompatBC;
+import flyingperson.BetterPipes.compat.CompatEnderIO;
+import flyingperson.BetterPipes.compat.CompatThermalExpansion;
+import flyingperson.BetterPipes.compat.gtce.CompatGTCEEnergy;
+import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
+import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.MessageGetConnections;
 import flyingperson.BetterPipes.network.MessageReturnConnections;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
+import flyingperson.BetterPipes.util.RegisterBCStuff;
 import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.config.Config;
@@ -23,6 +31,8 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent e) {
+        if (Loader.isModLoaded("appliedenergistics2")) RegisterAEStuff.registerPartModel();
+        if (Loader.isModLoaded("buildcrafttransport")) RegisterBCStuff.preInit(e);
     }
 
     public void init(FMLInitializationEvent e) {
