@@ -3,4 +3,5 @@ item.betterpipes.aepart.name=Деталь манекена AE2
 item.Blocker.name=Деталь манекена BC
 betterpipes.subtitle.wrench=Гаечный ключ иди брр
 betterpipes.tooltip.aepart1=Этот предмет бесполезен но служит только для блокировки кабельных соединений AE2
-betterpipes.tooltip.aepart2=Если вы получили это в режиме выживания, сообщите об этом автору мода
+betterpipes.tooltip.bcpart1=Этот предмет бесполезен но служит только для блокировки кабельных соединений BC
+betterpipes.tooltip.blocker2=Если вы получили это в режиме выживания, сообщите об этом автору мода

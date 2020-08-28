@@ -383,7 +383,7 @@ public class Utils {
         return null;
     }
 
-    public static RayTraceResult getBlockLookingat1(EntityPlayer liv, BlockPos exclude) {
+    public static RayTraceResult getBlockLookingat1(EntityPlayer liv) {
         Vec3d pos2 = liv.getPositionVector().addVector(0, liv.getEyeHeight(), 0);
         RayTraceResult rayTraceResult = liv.world.rayTraceBlocks(pos2, pos2.add(liv.getLookVec().scale(12)), false, true, true);
         if (rayTraceResult != null) {
@@ -407,12 +407,6 @@ public class Utils {
             }
         }
         return null;
-    }
-
-    public static Vec3d posToVec(BlockPos pos) {return new Vec3d(pos.getX(), pos.getY(), pos.getZ());}
-
-    public static Vec3d getVecHitFromPos(BlockPos pos, EnumFacing direction) {
-        return ((posToVec(pos.offset(direction, 1)).subtract(posToVec(pos))).scale(0.3)).add((posToVec(pos)).addVector(0.5, 0.5, 0.5));
     }
 
     @Nullable
@@ -528,34 +522,45 @@ public class Utils {
         for (ItemStack item : items) dropItem(item, player);
     }
 
-    public static void wrenchUse(PlayerInteractEvent event) {
-        EntityPlayer player = event.getEntityPlayer();
-        World worldIn = event.getWorld();
-        event.getWorld().playSound(event.getEntityPlayer(), event.getPos(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
-        event.getEntityPlayer().swingArm(EnumHand.MAIN_HAND);
-        for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
-            RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
-            if (lookingAt != null) {
-                BlockPos pos = lookingAt.getBlockPos();
-                TileEntity te = worldIn.getTileEntity(pos);
-                if (te != null) {
-                    if (compat.isAcceptable(te)) {
-                        if (!player.isSneaking()) {
-                            EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+    public static boolean wrenchUse(EntityPlayer player, World worldIn, CompatBase compat) {
+        boolean setConnection = false;
+        RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
+        if (lookingAt != null) {
+            BlockPos pos = lookingAt.getBlockPos();
+            TileEntity te = worldIn.getTileEntity(pos);
+            if (te != null) {
+                if (!player.isSneaking()) {
+                    EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+                    if (sideToggled != null) {
+
+                        if (compat.isAcceptable(te)) {
                             if (compat.getConnections(te).contains(sideToggled)) {
                                 compat.disconnect(te, sideToggled, player);
                                 compat.disconnect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
+                                setConnection = true;
                             } else {
                                 compat.connect(te, sideToggled, player);
                                 compat.connect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
+                                setConnection = true;
                             }
-                            worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
-                            te.markDirty();
-                            return;
+                        }
+                        worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
+                        te.getBlockType().onNeighborChange(worldIn, te.getPos(), te.getPos().offset(sideToggled, 1));
+                        te.markDirty();
+                        TileEntity connectTo = worldIn.getTileEntity(pos.offset(sideToggled, 1));
+                        if (connectTo != null) {
+                            worldIn.notifyBlockUpdate(connectTo.getPos(), worldIn.getBlockState(connectTo.getPos()), worldIn.getBlockState(connectTo.getPos()), 3);
+                            connectTo.getBlockType().onNeighborChange(worldIn, connectTo.getPos(), connectTo.getPos().offset(sideToggled.getOpposite(), 1));
+                            connectTo.markDirty();
                         }
                     }
                 }
             }
         }
+        if (setConnection) {
+            worldIn.playSound(player, player.getPosition(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            player.swingArm(EnumHand.MAIN_HAND);
+        }
+        return setConnection;
     }
 }

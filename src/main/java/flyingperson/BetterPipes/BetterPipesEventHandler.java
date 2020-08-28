@@ -38,7 +38,7 @@ public class BetterPipesEventHandler {
 
                         boolean lookingAt = false;
 
-                        RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                        RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer());
                         RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
@@ -67,7 +67,7 @@ public class BetterPipesEventHandler {
 
                                 boolean lookingAt = false;
 
-                                RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer(), pos);
+                                RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer());
                                 RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
@@ -118,7 +118,6 @@ public class BetterPipesEventHandler {
             if (event instanceof PlayerInteractEvent.RightClickItem | event instanceof PlayerInteractEvent.RightClickBlock) {
                 ItemStack held = event.getEntityPlayer().getHeldItemMainhand();
                 if (held.getItem() instanceof IBetterPipesWrench) {
-                    event.setCanceled(true);
                     RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(event.getEntityPlayer());
                     if (lookingAt != null) {
                         if (!BetterPipes.instance.wrenchMap.contains(lookingAt.getBlockPos())) {
@@ -127,14 +126,16 @@ public class BetterPipesEventHandler {
                                 if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
                                     if (((IBetterPipesWrench) held.getItem()).canBeUsed(held, event.getEntityPlayer())) {
                                         ((IBetterPipesWrench) held.getItem()).damage(held, event.getEntityPlayer());
-                                        Utils.wrenchUse(event);
-                                        event.setCanceled(true);
-                                        return;
+                                        if (Utils.wrenchUse(event.getEntityPlayer(), event.getWorld(), compat)) {
+                                            event.setCanceled(true);
+                                            return;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    event.setCanceled(true);
                 }
             }
         }
@@ -143,6 +144,15 @@ public class BetterPipesEventHandler {
     @SubscribeEvent
     public void onEvent(LivingEntityUseItemEvent event) {
         if (event.getItem().getItem() instanceof IBetterPipesWrench) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onEvent(PlayerContainerEvent event) {
+        System.out.println(event.getClass());
+        if (event.isCancelable()) {
+            event.setCanceled(true);
+        }
+        System.out.println(event.isCanceled());
     }
 
     @SubscribeEvent

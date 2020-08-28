@@ -38,7 +38,7 @@ public class AEPartItem extends Item implements IPartItem {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         if (stack.getItem() instanceof AEPartItem) {
             tooltip.add(I18n.format("betterpipes.tooltip.aepart1"));
-            tooltip.add(I18n.format("betterpipes.tooltip.aepart2"));
+            tooltip.add(I18n.format("betterpipes.tooltip.blocker2"));
         }
     }
 

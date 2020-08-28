@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
 
@@ -38,7 +39,7 @@ public class MessageReturnConnections implements IMessage {
             ArrayList<EnumFacing> connections = Utils.toArrayList(buf2.readVarIntArray());
             this.connectionBlock = new ConnectionBlock(pos, connections);
         } catch (Exception e) {
-            BetterPipes.logger.error("Something went wrong trying to receive a packet");
+            BetterPipes.logger.log(Level.ERROR, "Something went wrong trying to receive a packet");
         }
     }
 
@@ -52,10 +53,15 @@ public class MessageReturnConnections implements IMessage {
                 if (player.world.getTileEntity(connectionBlock.pos) != null) {
                     TileEntity te = player.world.getTileEntity(connectionBlock.pos);
                     player.world.notifyBlockUpdate(connectionBlock.pos, player.world.getBlockState(connectionBlock.pos), player.world.getBlockState(connectionBlock.pos), 3);
+                    if (te != null) {
+                        te.markDirty();
+                        for (EnumFacing e : EnumFacing.VALUES) {
+                            te.getBlockType().onNeighborChange(te.getWorld(), te.getPos(), te.getPos().offset(e, 1));
+                        }
+                    }
                     ConnectionGrid.instance().add(connectionBlock);
                 }
             });
-
             return null;
         }
     }
