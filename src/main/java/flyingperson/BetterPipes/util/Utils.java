@@ -1,6 +1,7 @@
 package flyingperson.BetterPipes.util;
 
 import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.IBetterPipesWrench;
 import flyingperson.BetterPipes.ModSounds;
 import flyingperson.BetterPipes.compat.CompatBase;
 import net.minecraft.block.Block;

@@ -125,8 +125,8 @@ public class BetterPipesEventHandler {
                             for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
                                 if (compat.isAcceptable(event.getWorld().getTileEntity(lookingAt.getBlockPos()))) {
                                     if (((IBetterPipesWrench) held.getItem()).canBeUsed(held, event.getEntityPlayer())) {
-                                        ((IBetterPipesWrench) held.getItem()).damage(held, event.getEntityPlayer());
                                         if (Utils.wrenchUse(event.getEntityPlayer(), event.getWorld(), compat)) {
+                                            ((IBetterPipesWrench) held.getItem()).damage(held, event.getEntityPlayer());
                                             event.setCanceled(true);
                                             return;
                                         }

@@ -75,9 +75,4 @@ public class ItemWrench extends ItemTool implements IBetterPipesWrench {
         }
         return 0f;
     }
-
-    @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        return EnumActionResult.SUCCESS;
-    }
 }
