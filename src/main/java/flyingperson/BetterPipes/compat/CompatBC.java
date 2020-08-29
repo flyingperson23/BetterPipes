@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,10 @@ public class CompatBC extends CompatBase {
         if (isAcceptable(te)) {
             TilePipeHolder tile = (TilePipeHolder) te;
             if (tile.getPluggable(direction) instanceof  BCBlockPart) tile.replacePluggable(direction, null);
+            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
+            }
         }
     }
 
@@ -58,6 +63,10 @@ public class CompatBC extends CompatBase {
         if (isAcceptable(te)) {
             TilePipeHolder tile = (TilePipeHolder) te;
             if (tile.getPluggable(direction) == null) tile.replacePluggable(direction, new BCBlockPart(RegisterBCStuff.pluggableDefinition, tile.getPipe().holder, direction));
+            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
+            }
         }
     }
 
@@ -80,6 +89,6 @@ public class CompatBC extends CompatBase {
 
     @Override
     public float getBreakSpeed() {
-        return 10f;
+        return 20f;
     }
 }

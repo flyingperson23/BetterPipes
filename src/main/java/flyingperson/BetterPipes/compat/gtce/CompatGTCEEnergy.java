@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,8 +51,10 @@ public class CompatGTCEEnergy extends CompatBase {
             TileEntityCable cable = (TileEntityCable) te;
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, false);
 
-            te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-            te.markDirty();
+            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
+            }
             cable.notifyBlockUpdate();
         }
     }
@@ -62,8 +65,13 @@ public class CompatGTCEEnergy extends CompatBase {
             TileEntityCable cable = (TileEntityCable) te;
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, true);
 
-            te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-            te.markDirty();
+            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
+            }
+            }
             cable.notifyBlockUpdate();
         }
     }
@@ -82,7 +90,7 @@ public class CompatGTCEEnergy extends CompatBase {
 
     @Override
     public float getBreakSpeed() {
-        return 40f;
+        return 80f;
     }
 
 }

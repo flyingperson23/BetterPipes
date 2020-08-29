@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,8 +72,10 @@ public class CompatAE2 extends CompatBase {
                     tile.partChanged();
                     tile.markForSave();
                     tile.markForUpdate();
-                    tile.markDirty();
-                    tile.getWorld().notifyBlockUpdate(tile.getPos(), tile.getBlockState(), tile.getBlockState(), 3);
+                    if (te.getWorld() instanceof WorldServer) {
+                        te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                        te.markDirty();
+                    }
                 }
             }
         }
@@ -88,8 +91,10 @@ public class CompatAE2 extends CompatBase {
                     tile.partChanged();
                     tile.markForSave();
                     tile.markForUpdate();
-                    tile.markDirty();
-                    tile.getWorld().notifyBlockUpdate(tile.getPos(), tile.getBlockState(), tile.getBlockState(), 3);
+                    if (te.getWorld() instanceof WorldServer) {
+                        te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                        te.markDirty();
+                    }
                 }
             }
         }
@@ -112,6 +117,6 @@ public class CompatAE2 extends CompatBase {
 
     @Override
     public float getBreakSpeed() {
-        return 30f;
+        return 60f;
     }
 }

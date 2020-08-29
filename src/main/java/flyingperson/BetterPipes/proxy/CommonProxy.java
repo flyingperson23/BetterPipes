@@ -2,13 +2,6 @@ package flyingperson.BetterPipes.proxy;
 
 import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.ModSounds;
-import flyingperson.BetterPipes.compat.CompatAE2;
-import flyingperson.BetterPipes.compat.CompatBC;
-import flyingperson.BetterPipes.compat.CompatEnderIO;
-import flyingperson.BetterPipes.compat.CompatThermalExpansion;
-import flyingperson.BetterPipes.compat.gtce.CompatGTCEEnergy;
-import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
-import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.MessageGetConnections;
 import flyingperson.BetterPipes.network.MessageReturnConnections;

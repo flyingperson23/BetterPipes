@@ -5,8 +5,6 @@ import flyingperson.BetterPipes.compat.gtce.CompatGTCEEnergy;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.proxy.CommonProxy;
-import flyingperson.BetterPipes.util.RegisterAEStuff;
-import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -31,7 +29,7 @@ public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.8";
+    public static final String VERSION = "0.9";
 
     public static Logger logger;
 
@@ -63,10 +61,11 @@ public class BetterPipes
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
-        if (Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalExpansion());
+        if (Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalDynamics());
         if (Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());
         if (Loader.isModLoaded("appliedenergistics2")) COMPAT_LIST.add(new CompatAE2());
         if (Loader.isModLoaded("buildcrafttransport")) COMPAT_LIST.add(new CompatBC());
+        if (Loader.isModLoaded("logisticspipes")) COMPAT_LIST.add(new CompatLogisticsPipes());
         if (Loader.isModLoaded("gregtech")) {
             COMPAT_LIST.add(new CompatGTCEItem());
             COMPAT_LIST.add(new CompatGTCEFluid());

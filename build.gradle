@@ -11,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "0.8"
+version = "0.9"
 group = "flyingperson.betterpipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "betterpipes"
 
@@ -33,28 +33,48 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+repositories {
+    maven { // Buildcraft
+        name 'buildcraft'
+        url 'https://mod-buildcraft.com/maven/'
+    }
+    maven { // CCL, CCC, NEI
+        name 'Chickenbones Repo'
+        url 'http://chickenbones.net/maven/'
+    }
+
+    maven { // The One Probe, EnderIO, EnderCore
+        name 'tterrag'
+        url 'http://maven.tterrag.com/'
+    }
+    maven { // CoFH
+        name 'Covers Maven'
+        url 'http://maven.covers1624.net/'
+    }
+    maven {
+        url = "https://www.cursemaven.com"
+    }
+}
+
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    compile "curse.maven:buildcraft:2914534"
+    compile "curse.maven:ender-io:2552714"
+    compile "curse.maven:endercore:2547411"
+    compile "curse.maven:applied-energistics-2:2747063"
+    compile "curse.maven:codechicken-lib-1-8:2779848"
+    compile "curse.maven:cofh-core:2920433"
+    compile "curse.maven:cofh-world:2920434"
+    compile "curse.maven:shadowfacts-forgelin:2785465"
+    compile "curse.maven:gregtechce:3036000"
+    compile "curse.maven:immersive-engineering:2676501"
+    compile "curse.maven:thermal-foundation:2926428"
+    compile "curse.maven:thermal-dynamics:2920505"
+    compile "curse.maven:redstone-flux:2920436"
+    compileOnly "curse.maven:logistics-pipes:3032429"
+    compile "curse.maven:ctm:2915363"
+    compile "curse.maven:computercraft:2478952"
+    compile "curse.maven:opencomputers:2828357"
+    compile "curse.maven:mcmultipart:2615930"
 }
 
 processResources {

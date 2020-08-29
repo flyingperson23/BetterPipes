@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
@@ -49,8 +50,10 @@ public class CompatGTCEItem extends CompatBase {
             TileEntityInventoryPipe cable = (TileEntityInventoryPipe) te;
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, false);
 
-            te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-            te.markDirty();
+            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
+            }
         }
     }
 
@@ -60,8 +63,10 @@ public class CompatGTCEItem extends CompatBase {
             TileEntityInventoryPipe cable = (TileEntityInventoryPipe) te;
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, true);
 
-            te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-            te.markDirty();
+            if (te.getWorld() instanceof WorldServer) {
+                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+                te.markDirty();
+            }
         }
     }
 
@@ -78,6 +83,6 @@ public class CompatGTCEItem extends CompatBase {
 
     @Override
     public float getBreakSpeed() {
-        return 40f;
+        return 80f;
     }
 }

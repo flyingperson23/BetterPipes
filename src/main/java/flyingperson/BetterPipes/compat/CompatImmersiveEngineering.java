@@ -140,6 +140,6 @@ public class CompatImmersiveEngineering extends CompatBase {
 
     @Override
     public float getBreakSpeed() {
-        return 30f;
+        return 60f;
     }
 }

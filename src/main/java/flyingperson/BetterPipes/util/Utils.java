@@ -523,7 +523,9 @@ public class Utils {
         for (ItemStack item : items) dropItem(item, player);
     }
 
-    public static boolean wrenchUse(EntityPlayer player, World worldIn, CompatBase compat) {
+    public static boolean wrenchUse(PlayerInteractEvent event, CompatBase compat) {
+        EntityPlayer player = event.getEntityPlayer();
+        World worldIn = event.getWorld();
         boolean setConnection = false;
         RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
         if (lookingAt != null) {
@@ -533,7 +535,6 @@ public class Utils {
                 if (!player.isSneaking()) {
                     EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
                     if (sideToggled != null) {
-
                         if (compat.isAcceptable(te)) {
                             if (compat.getConnections(te).contains(sideToggled)) {
                                 compat.disconnect(te, sideToggled, player);
