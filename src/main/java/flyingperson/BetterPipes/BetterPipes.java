@@ -29,7 +29,7 @@ public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.9";
+    public static final String VERSION = "0.11";
 
     public static Logger logger;
 
@@ -61,12 +61,14 @@ public class BetterPipes
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
-        if (Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalDynamics());
-        if (Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());
-        if (Loader.isModLoaded("appliedenergistics2")) COMPAT_LIST.add(new CompatAE2());
-        if (Loader.isModLoaded("buildcrafttransport")) COMPAT_LIST.add(new CompatBC());
-        if (Loader.isModLoaded("logisticspipes")) COMPAT_LIST.add(new CompatLogisticsPipes());
-        if (Loader.isModLoaded("gregtech")) {
+        if (BPConfig.compat.thermal && Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalDynamics());
+        if (BPConfig.compat.enderIO && Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());
+        if (BPConfig.compat.ae2 && Loader.isModLoaded("appliedenergistics2")) COMPAT_LIST.add(new CompatAE2());
+        if (BPConfig.compat.bc && Loader.isModLoaded("buildcrafttransport")) COMPAT_LIST.add(new CompatBC());
+        if (BPConfig.compat.lp && Loader.isModLoaded("logisticspipes")) COMPAT_LIST.add(new CompatLogisticsPipes());
+        if (BPConfig.compat.immersiveEngineering && Loader.isModLoaded("immersiveengineering")) COMPAT_LIST.add(new CompatImmersiveEngineering());
+        if (BPConfig.compat.mekanism && Loader.isModLoaded("mekanism")) COMPAT_LIST.add(new CompatMekanism());
+        if (BPConfig.compat.gtce && Loader.isModLoaded("gregtech")) {
             COMPAT_LIST.add(new CompatGTCEItem());
             COMPAT_LIST.add(new CompatGTCEFluid());
             COMPAT_LIST.add(new CompatGTCEEnergy());

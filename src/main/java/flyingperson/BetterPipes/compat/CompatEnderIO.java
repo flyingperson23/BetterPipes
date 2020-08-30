@@ -151,6 +151,6 @@ public class CompatEnderIO extends CompatBase {
 
     @Override
     public float getBreakSpeed() {
-        return 60f;
+        return 30f;
     }
 }

@@ -11,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "0.9"
+version = "0.11"
 group = "flyingperson.betterpipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "betterpipes"
 
@@ -34,23 +34,6 @@ minecraft {
 }
 
 repositories {
-    maven { // Buildcraft
-        name 'buildcraft'
-        url 'https://mod-buildcraft.com/maven/'
-    }
-    maven { // CCL, CCC, NEI
-        name 'Chickenbones Repo'
-        url 'http://chickenbones.net/maven/'
-    }
-
-    maven { // The One Probe, EnderIO, EnderCore
-        name 'tterrag'
-        url 'http://maven.tterrag.com/'
-    }
-    maven { // CoFH
-        name 'Covers Maven'
-        url 'http://maven.covers1624.net/'
-    }
     maven {
         url = "https://www.cursemaven.com"
     }
@@ -75,6 +58,7 @@ dependencies {
     compile "curse.maven:computercraft:2478952"
     compile "curse.maven:opencomputers:2828357"
     compile "curse.maven:mcmultipart:2615930"
+    compile "curse.maven:mekanism:2835175"
 }
 
 processResources {

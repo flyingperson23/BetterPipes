@@ -1,6 +1,5 @@
 package flyingperson.BetterPipes.util;
 
-import appeng.api.parts.IPart;
 import appeng.api.parts.IPartItem;
 import flyingperson.BetterPipes.BetterPipes;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -16,15 +15,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class AEPartItem extends Item implements IPartItem {
+public class AEPartItem extends Item implements IPartItem<AEBlockPart> {
+
     public AEPartItem() {
-        setRegistryName("aepart");
-        setUnlocalizedName(BetterPipes.MODID+".aepart");
+        this.setRegistryName("aepart");
+        this.setUnlocalizedName(BetterPipes.MODID+".aepart");
     }
 
     @Nullable
     @Override
-    public IPart createPartFromItemStack(ItemStack itemStack) {
+    public AEBlockPart createPartFromItemStack(ItemStack itemStack) {
         return new AEBlockPart();
     }
 
