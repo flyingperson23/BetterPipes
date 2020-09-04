@@ -1,19 +1,14 @@
 package flyingperson.BetterPipes.client;
 
 import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -23,22 +18,16 @@ import java.util.ArrayList;
 @SideOnly(Side.CLIENT)
 public class Renderer {
 
-    public static void renderOverlay(EntityPlayer aPlayer, BlockPos pos, EnumFacing aSide, float aPartialTicks, ArrayList<EnumFacing> connections)
-    {
+    public static void renderOverlay(EntityPlayer aPlayer, BlockPos pos, EnumFacing aSide, float aPartialTicks, ArrayList<EnumFacing> connections) {
         int aX = pos.getX();
         int aY = pos.getY();
         int aZ = pos.getZ();
-        try {
-            Class.forName("codechicken.lib.vec.Rotation");
-        } catch (ClassNotFoundException e) {
-            return;
-        }
 
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         GL11.glPushMatrix();
         GL11.glTranslated(-(aPlayer.lastTickPosX + (aPlayer.posX - aPlayer.lastTickPosX) * aPartialTicks), -(aPlayer.lastTickPosY + (aPlayer.posY - aPlayer.lastTickPosY) * aPartialTicks), -(aPlayer.lastTickPosZ + (aPlayer.posZ - aPlayer.lastTickPosZ) * aPartialTicks));
         GL11.glTranslated(aX + 0.5, aY + 0.5, aZ + 0.5);
-        codechicken.lib.vec.Rotation.sideRotations[aSide.getIndex()].glApply();
+        Utils.sideRotations[aSide.getIndex()].glApply();
         GL11.glTranslated(0, -0.5025, 0);
         GL11.glLineWidth(2.0F);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -408,7 +397,7 @@ public class Renderer {
         GL11.glPushMatrix();
         GL11.glTranslated(-(aPlayer.lastTickPosX + (aPlayer.posX - aPlayer.lastTickPosX) * aPartialTicks), -(aPlayer.lastTickPosY + (aPlayer.posY - aPlayer.lastTickPosY) * aPartialTicks), -(aPlayer.lastTickPosZ + (aPlayer.posZ - aPlayer.lastTickPosZ) * aPartialTicks));
         GL11.glTranslated(aX + 0.5, aY + 0.5, aZ + 0.5);
-        codechicken.lib.vec.Rotation.sideRotations[aSide.getIndex()].glApply();
+        Utils.sideRotations[aSide.getIndex()].glApply();
         GL11.glTranslated(0, -0.5025, 0);
         GL11.glLineWidth(2.0F);
         GL11.glDisable(GL11.GL_TEXTURE_2D);

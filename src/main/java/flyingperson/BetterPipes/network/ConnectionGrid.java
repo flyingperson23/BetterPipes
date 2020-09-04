@@ -34,11 +34,4 @@ public class ConnectionGrid {
         return null;
     }
 
-    public boolean hasBlock(BlockPos pos) {
-        for (ConnectionBlock c : connectionGrid) {
-            if (Utils.arePosEqual(c.pos, pos)) return true;
-        }
-        return false;
-    }
-
 }

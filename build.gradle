@@ -8,14 +8,12 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-
-version = "0.11"
-group = "flyingperson.betterpipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "0.12"
+group = "flyingperson.betterpipes"
 archivesBaseName = "betterpipes"
 
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
@@ -23,14 +21,7 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.5.2847"
     runDir = "run"
-    
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "snapshot_20171003"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 repositories {
@@ -40,41 +31,39 @@ repositories {
 }
 
 dependencies {
-    compile "curse.maven:buildcraft:2914534"
-    compile "curse.maven:ender-io:2552714"
+    //libs / coremods
     compile "curse.maven:endercore:2547411"
-    compile "curse.maven:applied-energistics-2:2747063"
-    compile "curse.maven:codechicken-lib-1-8:2779848"
     compile "curse.maven:cofh-core:2920433"
     compile "curse.maven:cofh-world:2920434"
     compile "curse.maven:shadowfacts-forgelin:2785465"
-    compile "curse.maven:gregtechce:3036000"
-    compile "curse.maven:immersive-engineering:2676501"
     compile "curse.maven:thermal-foundation:2926428"
-    compile "curse.maven:thermal-dynamics:2920505"
+    compile "curse.maven:codechicken-lib-1-8:2779848"
     compile "curse.maven:redstone-flux:2920436"
-    compileOnly "curse.maven:logistics-pipes:3032429"
     compile "curse.maven:ctm:2915363"
     compile "curse.maven:computercraft:2478952"
     compile "curse.maven:opencomputers:2828357"
     compile "curse.maven:mcmultipart:2615930"
+
+    //content mods changed
+    compile "curse.maven:pneumaticcraft-repressurized:2978408"
+    compile "curse.maven:cyclic:3040547"
     compile "curse.maven:mekanism:2835175"
+    compileOnly "curse.maven:logistics-pipes:3032429"
+    compile "curse.maven:thermal-dynamics:2920505"
+    compile "curse.maven:gregtechce:3036000"
+    compile "curse.maven:immersive-engineering:2676501"
+    compile "curse.maven:buildcraft:2914534"
+    compile "curse.maven:applied-energistics-2:2747063"
+    compile "curse.maven:ender-io:2552714"
 }
 
 processResources {
-    // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
-        // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
-    // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }

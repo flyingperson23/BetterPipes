@@ -17,6 +17,10 @@ import java.util.List;
 
 public class CompatImmersiveEngineering extends CompatBase {
 
+    public CompatImmersiveEngineering() {
+        //if (BPConfig.compat.immersiveEngineeringWrench) BetterPipes.instance.WRENCH_LIST.add(IEContent.itemTool.)
+    }
+
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (te instanceof TileEntityFluidPipe) {
@@ -41,11 +45,10 @@ public class CompatImmersiveEngineering extends CompatBase {
                     if (!getConnections(te).contains(direction)) toggleSide(pipe, direction.getIndex());
 
 
-                    te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                    te.markDirty();
-
 
                     pipe.markContainingBlockForUpdate(null);
+
+                    Utils.update(te);
                 }
             }
         }
@@ -77,12 +80,8 @@ public class CompatImmersiveEngineering extends CompatBase {
                     pipe.sideConfig[direction.getIndex()] = -1;
                     if (getConnections(te).contains(direction)) toggleSide(pipe, direction.getIndex());
 
-
-                    te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                    te.markDirty();
-
                     pipe.markContainingBlockForUpdate(null);
-
+                    Utils.update(te);
                 }
             }
         }

@@ -1,11 +1,13 @@
 package flyingperson.BetterPipes.compat;
 
-import buildcraft.api.transport.pipe.PipeEvent;
+import buildcraft.api.BCItems;
 import buildcraft.transport.BCTransportBlocks;
-import buildcraft.transport.plug.PluggableBlocker;
 import buildcraft.transport.tile.TilePipeHolder;
+import flyingperson.BetterPipes.BPConfig;
+import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.util.BCBlockPart;
 import flyingperson.BetterPipes.util.RegisterBCStuff;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +21,11 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompatBC extends CompatBase {
+
+    public CompatBC() {
+        if (BPConfig.compat.bcWrench) BetterPipes.instance.WRENCH_LIST.add(BCItems.Core.WRENCH);
+    }
+
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
@@ -52,8 +59,7 @@ public class CompatBC extends CompatBase {
             TilePipeHolder tile = (TilePipeHolder) te;
             if (tile.getPluggable(direction) instanceof  BCBlockPart) tile.replacePluggable(direction, null);
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }
@@ -64,8 +70,7 @@ public class CompatBC extends CompatBase {
             TilePipeHolder tile = (TilePipeHolder) te;
             if (tile.getPluggable(direction) == null) tile.replacePluggable(direction, new BCBlockPart(RegisterBCStuff.pluggableDefinition, tile.getPipe().holder, direction));
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }

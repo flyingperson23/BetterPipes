@@ -1,10 +1,13 @@
 package flyingperson.BetterPipes.compat.gtce;
 
+import flyingperson.BetterPipes.BPConfig;
+import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.util.Utils;
 import flyingperson.BetterPipes.compat.CompatBase;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.pipenet.tile.AttachmentType;
 import gregtech.common.blocks.MetaBlocks;
+import gregtech.common.items.MetaItems;
 import gregtech.common.pipelike.cable.tile.TileEntityCable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -19,6 +22,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompatGTCEEnergy extends CompatBase {
+
+    public CompatGTCEEnergy() {
+        if (BPConfig.compat.gtceWrench) {
+            BetterPipes.instance.WRENCH_LIST.add(MetaItems.WRENCH.getMetaItem());
+            BetterPipes.instance.WRENCH_LIST.add(MetaItems.WRENCH_LV.getMetaItem());
+            BetterPipes.instance.WRENCH_LIST.add(MetaItems.WRENCH_MV.getMetaItem());
+            BetterPipes.instance.WRENCH_LIST.add(MetaItems.WRENCH_HV.getMetaItem());
+        }
+    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -52,8 +64,7 @@ public class CompatGTCEEnergy extends CompatBase {
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, false);
 
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
             cable.notifyBlockUpdate();
         }
@@ -66,11 +77,7 @@ public class CompatGTCEEnergy extends CompatBase {
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, true);
 
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();            if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
-            }
+                Utils.update(te);
             }
             cable.notifyBlockUpdate();
         }

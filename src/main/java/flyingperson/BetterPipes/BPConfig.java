@@ -40,7 +40,30 @@ public class BPConfig {
         public boolean lp = false;
         @Config.Comment("Compat for Thermal Dynamics?")
         public boolean thermal = true;
-        @Config.Comment("Compat for Mekanism")
+        @Config.Comment("Compat for Mekanism?")
         public boolean mekanism = true;
+        @Config.Comment("Compat for Cyclic?")
+        public boolean cyclic = true;
+        @Config.Comment("Compat for PneumaticCraft: Repressurized?")
+        public boolean pneumaticcraft = true;
+
+        @Config.Comment("Compat for GTCE wrenches?")
+        public boolean gtceWrench = true;
+        @Config.Comment("Compat for AE2 wrenches?")
+        public boolean ae2Wrench = true;
+        @Config.Comment("Compat for BuildCraft wrench?")
+        public boolean bcWrench = true;
+        @Config.Comment("Compat for EnderIO yeta wrench?")
+        public boolean enderIOWrench = true;
+        @Config.Comment("Compat for Immersive Engineering engineer's hammer?")
+        public boolean immersiveEngineeringWrench = true;
+        @Config.Comment("Compat for Thermal Dynamics crescent hammer?")
+        public boolean thermalWrench = true;
+        @Config.Comment("Compat for Mekanism wrenches?")
+        public boolean mekanismWrench = true;
+        @Config.Comment("Compat for PneumaticCraft: Repressurized wrench?")
+        public boolean pneumaticcraftwrench = true;
+        @Config.Comment("Should a wrench from this mod be added?")
+        public boolean addWrench = true;
     }
 }

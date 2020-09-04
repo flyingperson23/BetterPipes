@@ -12,6 +12,6 @@ public class ModItems {
 
     @SideOnly(Side.CLIENT)
     public static void initModels() {
-        itemWrench.initModel();
+        if (BPConfig.compat.addWrench) itemWrench.initModel();
     }
 }

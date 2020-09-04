@@ -5,12 +5,17 @@ import crazypants.enderio.base.conduit.IConduit;
 import crazypants.enderio.base.conduit.IServerConduit;
 import crazypants.enderio.conduits.conduit.TileConduitBundle;
 import crazypants.enderio.conduits.init.ConduitObject;
+import flyingperson.BetterPipes.BPConfig;
+import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 
 import java.util.ArrayList;
@@ -18,6 +23,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompatEnderIO extends CompatBase {
+
+    public CompatEnderIO() {
+        if (BPConfig.compat.enderIOWrench) BetterPipes.instance.WRENCH_LIST.add(Item.REGISTRY.getObject(new ResourceLocation("enderio", "item_yeta_wrench")));
+    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -104,8 +113,7 @@ public class CompatEnderIO extends CompatBase {
                 conduit.connectionsChanged();
             }
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }
@@ -124,8 +132,7 @@ public class CompatEnderIO extends CompatBase {
                 conduit.connectionsChanged();
             }
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }

@@ -4,10 +4,12 @@ import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.IBetterPipesWrench;
 import flyingperson.BetterPipes.ModSounds;
 import flyingperson.BetterPipes.compat.CompatBase;
+import flyingperson.BetterPipes.network.MessageGetConnections;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import javax.annotation.Nullable;
+import javax.vecmath.Vector3d;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -523,6 +526,10 @@ public class Utils {
         for (ItemStack item : items) dropItem(item, player);
     }
 
+    public static boolean isValidWrench(Item item) {
+        return BetterPipes.instance.WRENCH_LIST.contains(item) || item instanceof IBetterPipesWrench;
+    }
+
     public static boolean wrenchUse(PlayerInteractEvent event, CompatBase compat) {
         EntityPlayer player = event.getEntityPlayer();
         World worldIn = event.getWorld();
@@ -539,12 +546,11 @@ public class Utils {
                             if (compat.getConnections(te).contains(sideToggled)) {
                                 compat.disconnect(te, sideToggled, player);
                                 compat.disconnect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
-                                setConnection = true;
                             } else {
                                 compat.connect(te, sideToggled, player);
                                 compat.connect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
-                                setConnection = true;
                             }
+                            setConnection = true;
                         }
                         worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
                         te.getBlockType().onNeighborChange(worldIn, te.getPos(), te.getPos().offset(sideToggled, 1));
@@ -558,11 +564,79 @@ public class Utils {
                     }
                 }
             }
+            BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos));
         }
         if (setConnection) {
             worldIn.playSound(player, player.getPosition(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
             player.swingArm(EnumHand.MAIN_HAND);
         }
         return setConnection;
+    }
+
+    public static Transformation[] sideRotations = new Transformation[]{//
+            new Transformation(new Matrix4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
+                @Override
+                public void glApply() {
+
+                }
+
+                @Override
+                public void apply(Vector3d v) {
+
+                }
+            },
+            new Transformation(new Matrix4(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)) {
+                @Override
+                public void apply(Vector3d vec) {
+                    vec.y = -vec.y;
+                    vec.z = -vec.z;
+                }
+
+            },
+            new Transformation(new Matrix4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)) {
+                @Override
+                public void apply(Vector3d vec) {
+                    double d1 = vec.y;
+                    double d2 = vec.z;
+                    vec.y = -d2;
+                    vec.z = d1;
+                }
+
+            },
+            new Transformation(new Matrix4(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1)) {
+                @Override
+                public void apply(Vector3d vec) {
+                    double d1 = vec.y;
+                    double d2 = vec.z;
+                    vec.y = d2;
+                    vec.z = -d1;
+                }
+
+            },
+            new Transformation(new Matrix4(0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
+                @Override
+                public void apply(Vector3d vec) {
+                    double d0 = vec.x;
+                    double d1 = vec.y;
+                    vec.x = d1;
+                    vec.y = -d0;
+                }
+
+            },
+            new Transformation(new Matrix4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
+                @Override
+                public void apply(Vector3d vec) {
+                    double d0 = vec.x;
+                    double d1 = vec.y;
+                    vec.x = -d1;
+                    vec.y = d0;
+                }
+
+            }
+    };
+
+    public static void update(TileEntity te) {
+        te.markDirty();
+        te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
     }
 }

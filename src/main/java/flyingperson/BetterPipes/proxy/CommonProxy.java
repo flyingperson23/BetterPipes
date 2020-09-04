@@ -1,5 +1,6 @@
 package flyingperson.BetterPipes.proxy;
 
+import flyingperson.BetterPipes.BPConfig;
 import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.ModSounds;
 import flyingperson.BetterPipes.item.ItemWrench;
@@ -40,7 +41,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(new ItemWrench());
+        if (BPConfig.compat.addWrench) event.getRegistry().register(new ItemWrench());
         if (Loader.isModLoaded("appliedenergistics2")) RegisterAEStuff.registerItems(event);
     }
 

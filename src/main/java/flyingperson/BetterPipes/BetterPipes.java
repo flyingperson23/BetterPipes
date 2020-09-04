@@ -5,6 +5,7 @@ import flyingperson.BetterPipes.compat.gtce.CompatGTCEEnergy;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.proxy.CommonProxy;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -24,12 +25,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
-@Mod(modid = BetterPipes.MODID, name = BetterPipes.NAME, version = BetterPipes.VERSION, dependencies = "required:codechickenlib; after:appliedenergistics2; after:buildcrafttransport")
+@Mod(modid = BetterPipes.MODID, name = BetterPipes.NAME, version = BetterPipes.VERSION, dependencies = "after:appliedenergistics2; after:buildcrafttransport")
 public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.11";
+    public static final String VERSION = "0.12";
 
     public static Logger logger;
 
@@ -68,6 +69,8 @@ public class BetterPipes
         if (BPConfig.compat.lp && Loader.isModLoaded("logisticspipes")) COMPAT_LIST.add(new CompatLogisticsPipes());
         if (BPConfig.compat.immersiveEngineering && Loader.isModLoaded("immersiveengineering")) COMPAT_LIST.add(new CompatImmersiveEngineering());
         if (BPConfig.compat.mekanism && Loader.isModLoaded("mekanism")) COMPAT_LIST.add(new CompatMekanism());
+        if (BPConfig.compat.cyclic && Loader.isModLoaded("cyclicmagic")) COMPAT_LIST.add(new CompatCyclic());
+        if (BPConfig.compat.pneumaticcraft && Loader.isModLoaded("pneumaticcraft")) COMPAT_LIST.add(new CompatPneumaticCraft());
         if (BPConfig.compat.gtce && Loader.isModLoaded("gregtech")) {
             COMPAT_LIST.add(new CompatGTCEItem());
             COMPAT_LIST.add(new CompatGTCEFluid());
@@ -83,5 +86,7 @@ public class BetterPipes
     }
 
     public ArrayList<CompatBase> COMPAT_LIST = new ArrayList<>();
+
+    public ArrayList<Item> WRENCH_LIST = new ArrayList<>();
 
 }

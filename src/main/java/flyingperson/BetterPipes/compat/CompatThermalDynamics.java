@@ -6,6 +6,9 @@ import cofh.thermaldynamics.duct.ConnectionType;
 import cofh.thermaldynamics.duct.attachments.cover.Cover;
 import cofh.thermaldynamics.duct.tiles.*;
 import cofh.thermaldynamics.init.TDBlocks;
+import cofh.thermalfoundation.init.TFItems;
+import flyingperson.BetterPipes.BPConfig;
+import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -24,6 +27,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompatThermalDynamics extends CompatBase {
+
+    public CompatThermalDynamics() {
+        if (BPConfig.compat.thermalWrench) BetterPipes.instance.WRENCH_LIST.add(TFItems.itemWrench);
+    }
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -56,8 +63,7 @@ public class CompatThermalDynamics extends CompatBase {
                 grid.updateLighting();
             }
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }
@@ -94,8 +100,7 @@ public class CompatThermalDynamics extends CompatBase {
                 grid.updateLighting();
             }
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }
@@ -144,7 +149,7 @@ public class CompatThermalDynamics extends CompatBase {
     public List<Block> getAcceptedBlocks() {
         ArrayList<Block> accepted = new ArrayList<>();
         for (BlockDuct duct : TDBlocks.blockDuct) {
-            accepted.add(duct.getBlockState().getBlock());
+            accepted.add(Block.REGISTRY.getObject(duct.getRegistryName()));
         }
         return accepted;
     }

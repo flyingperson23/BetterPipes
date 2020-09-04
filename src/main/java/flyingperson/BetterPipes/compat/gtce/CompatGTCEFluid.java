@@ -52,8 +52,7 @@ public class CompatGTCEFluid extends CompatBase {
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, false);
 
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }
@@ -65,8 +64,7 @@ public class CompatGTCEFluid extends CompatBase {
             cable.setConnectionBlocked(AttachmentType.PIPE, direction, true);
 
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
         }
     }

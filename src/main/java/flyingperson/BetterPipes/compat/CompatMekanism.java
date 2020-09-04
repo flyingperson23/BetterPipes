@@ -1,7 +1,11 @@
 package flyingperson.BetterPipes.compat;
 
+import flyingperson.BetterPipes.BPConfig;
+import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.util.Utils;
 import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
+import mekanism.common.MekanismItems;
 import mekanism.common.tile.prefab.TileEntityBasicBlock;
 import mekanism.common.tile.transmitter.TileEntitySidedPipe;
 import mekanism.common.tile.transmitter.TileEntityTransmitter;
@@ -18,6 +22,11 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompatMekanism extends CompatBase {
+
+    public CompatMekanism() {
+        if (BPConfig.compat.mekanismWrench) BetterPipes.instance.WRENCH_LIST.add(MekanismItems.Configurator);
+    }
+
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
@@ -53,8 +62,7 @@ public class CompatMekanism extends CompatBase {
             tile.refreshConnections(direction);
             tile.notifyTileChange();
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
             if (te instanceof TileEntityBasicBlock) {
                 Mekanism.packetHandler.sendUpdatePacket((TileEntityBasicBlock) te);
@@ -71,8 +79,7 @@ public class CompatMekanism extends CompatBase {
             tile.refreshConnections(direction);
             tile.notifyTileChange();
             if (te.getWorld() instanceof WorldServer) {
-                te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
-                te.markDirty();
+                Utils.update(te);
             }
             if (te instanceof TileEntityBasicBlock) {
                 Mekanism.packetHandler.sendUpdatePacket((TileEntityBasicBlock) te);

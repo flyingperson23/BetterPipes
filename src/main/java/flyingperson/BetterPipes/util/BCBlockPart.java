@@ -1,6 +1,5 @@
 package flyingperson.BetterPipes.util;
 
-
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.api.transport.pluggable.PluggableDefinition;
