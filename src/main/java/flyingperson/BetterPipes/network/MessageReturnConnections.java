@@ -50,17 +50,15 @@ public class MessageReturnConnections implements IMessage {
             EntityPlayerSP player = Minecraft.getMinecraft().player;
             ConnectionBlock connectionBlock = message.connectionBlock;
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                if (player.world.getTileEntity(connectionBlock.pos) != null) {
-                    TileEntity te = player.world.getTileEntity(connectionBlock.pos);
-                    player.world.notifyBlockUpdate(connectionBlock.pos, player.world.getBlockState(connectionBlock.pos), player.world.getBlockState(connectionBlock.pos), 3);
-                    if (te != null) {
-                        te.markDirty();
-                        for (EnumFacing e : EnumFacing.VALUES) {
-                            te.getBlockType().onNeighborChange(te.getWorld(), te.getPos(), te.getPos().offset(e, 1));
-                        }
+                TileEntity te = player.world.getTileEntity(connectionBlock.pos);
+                player.world.notifyBlockUpdate(connectionBlock.pos, player.world.getBlockState(connectionBlock.pos), player.world.getBlockState(connectionBlock.pos), 3);
+                if (te != null) {
+                    te.markDirty();
+                    for (EnumFacing e : EnumFacing.VALUES) {
+                        te.getBlockType().onNeighborChange(te.getWorld(), te.getPos(), te.getPos().offset(e, 1));
                     }
-                    ConnectionGrid.instance().add(connectionBlock);
                 }
+                ConnectionGrid.instance().add(connectionBlock);
             });
             return null;
         }

@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "0.12"
+version = "0.13"
 group = "flyingperson.betterpipes"
 archivesBaseName = "betterpipes"
 
@@ -32,7 +32,7 @@ repositories {
 
 dependencies {
     //libs / coremods
-    compile "curse.maven:endercore:2547411"
+    compileOnly "curse.maven:endercore:2547411"
     compile "curse.maven:cofh-core:2920433"
     compile "curse.maven:cofh-world:2920434"
     compile "curse.maven:shadowfacts-forgelin:2785465"
@@ -40,21 +40,26 @@ dependencies {
     compile "curse.maven:codechicken-lib-1-8:2779848"
     compile "curse.maven:redstone-flux:2920436"
     compile "curse.maven:ctm:2915363"
-    compile "curse.maven:computercraft:2478952"
-    compile "curse.maven:opencomputers:2828357"
+    compileOnly "curse.maven:computercraft:2478952"
+    compileOnly "curse.maven:opencomputers:2828357"
     compile "curse.maven:mcmultipart:2615930"
+    compile "curse.maven:bdlib:2518031"
+    compile "curse.maven:mcjtylib:2745846"
 
     //content mods changed
-    compile "curse.maven:pneumaticcraft-repressurized:2978408"
-    compile "curse.maven:cyclic:3040547"
-    compile "curse.maven:mekanism:2835175"
+    compileOnly "curse.maven:pneumaticcraft-repressurized:2978408"
+    compileOnly "curse.maven:cyclic:3040547"
+    compileOnly "curse.maven:mekanism:2835175"
     compileOnly "curse.maven:logistics-pipes:3032429"
     compile "curse.maven:thermal-dynamics:2920505"
-    compile "curse.maven:gregtechce:3036000"
-    compile "curse.maven:immersive-engineering:2676501"
+    compileOnly "curse.maven:gregtechce:3036000"
+    compileOnly "curse.maven:immersive-engineering:2676501"
     compile "curse.maven:buildcraft:2914534"
     compile "curse.maven:applied-energistics-2:2747063"
-    compile "curse.maven:ender-io:2552714"
+    compileOnly "curse.maven:ender-io:2552714"
+    compile "curse.maven:extra-utilities:2678374"
+    compile "curse.maven:pressure-pipes:2476931"
+    compile "curse.maven:xnet:2745852"
 }
 
 processResources {

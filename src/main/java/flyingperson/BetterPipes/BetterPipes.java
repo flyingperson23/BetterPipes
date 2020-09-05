@@ -30,7 +30,7 @@ public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.12";
+    public static final String VERSION = "0.13";
 
     public static Logger logger;
 
@@ -45,6 +45,7 @@ public class BetterPipes
     public static CommonProxy proxy;
 
     public ArrayList<BlockPos> wrenchMap = new ArrayList<>();
+    public ArrayList<BlockPos> wrenchMapNoTE = new ArrayList<>();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -76,6 +77,12 @@ public class BetterPipes
             COMPAT_LIST.add(new CompatGTCEFluid());
             COMPAT_LIST.add(new CompatGTCEEnergy());
         }
+
+
+        if (BPConfig.compat.exu2 && Loader.isModLoaded("extrautils2")) {
+            COMPAT_LIST_NO_TE.add(new CompatExU2());
+            COMPAT_LIST.add(new CompatExU2TE());
+        }
     }
 
     @SubscribeEvent
@@ -86,6 +93,7 @@ public class BetterPipes
     }
 
     public ArrayList<CompatBase> COMPAT_LIST = new ArrayList<>();
+    public ArrayList<CompatBaseNoTE> COMPAT_LIST_NO_TE = new ArrayList<>();
 
     public ArrayList<Item> WRENCH_LIST = new ArrayList<>();
 

@@ -46,6 +46,8 @@ public class BPConfig {
         public boolean cyclic = true;
         @Config.Comment("Compat for PneumaticCraft: Repressurized?")
         public boolean pneumaticcraft = true;
+        @Config.Comment("Compat for ExU2?")
+        public boolean exu2 = true;
 
         @Config.Comment("Compat for GTCE wrenches?")
         public boolean gtceWrench = true;
@@ -63,6 +65,8 @@ public class BPConfig {
         public boolean mekanismWrench = true;
         @Config.Comment("Compat for PneumaticCraft: Repressurized wrench?")
         public boolean pneumaticcraftwrench = true;
+        @Config.Comment("Compat for ExU2 wrench?")
+        public boolean exu2wrench = true;
         @Config.Comment("Should a wrench from this mod be added?")
         public boolean addWrench = true;
     }

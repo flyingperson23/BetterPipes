@@ -2,6 +2,7 @@ package flyingperson.BetterPipes.item;
 
 import flyingperson.BetterPipes.*;
 import flyingperson.BetterPipes.compat.CompatBase;
+import flyingperson.BetterPipes.compat.CompatBaseNoTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -38,7 +39,9 @@ public class ItemWrench extends ItemTool implements IBetterPipesWrench {
         HashSet<Block> set = new HashSet<>();
         for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
             set.addAll(compat.getAcceptedBlocks());
-            compat.getAcceptedBlocks().forEach(System.out::println);
+        }
+        for (CompatBaseNoTE compat : BetterPipes.instance.COMPAT_LIST_NO_TE) {
+            set.addAll(compat.getAcceptedBlocks());
         }
         return set;
     }
@@ -67,6 +70,11 @@ public class ItemWrench extends ItemTool implements IBetterPipesWrench {
     @Override
     public float getDestroySpeed(ItemStack stack, IBlockState state) {
         for (CompatBase compat : BetterPipes.instance.COMPAT_LIST) {
+            if (compat.getAcceptedBlocks().contains(state.getBlock())) {
+                return compat.getBreakSpeed();
+            }
+        }
+        for (CompatBaseNoTE compat : BetterPipes.instance.COMPAT_LIST_NO_TE) {
             if (compat.getAcceptedBlocks().contains(state.getBlock())) {
                 return compat.getBreakSpeed();
             }

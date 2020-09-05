@@ -4,10 +4,12 @@ import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.IBetterPipesWrench;
 import flyingperson.BetterPipes.ModSounds;
 import flyingperson.BetterPipes.compat.CompatBase;
+import flyingperson.BetterPipes.compat.CompatBaseNoTE;
 import flyingperson.BetterPipes.network.MessageGetConnections;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,7 +19,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import org.jline.utils.InfoCmp;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Vector3d;
@@ -564,7 +568,8 @@ public class Utils {
                     }
                 }
             }
-            BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos));
+            for (int i = 0; i < BetterPipes.instance.COMPAT_LIST.size(); i++) BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, i*2));
+
         }
         if (setConnection) {
             worldIn.playSound(player, player.getPosition(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -572,6 +577,52 @@ public class Utils {
         }
         return setConnection;
     }
+
+
+
+
+
+    public static boolean wrenchUse(PlayerInteractEvent event, CompatBaseNoTE compat) {
+        EntityPlayer player = event.getEntityPlayer();
+        World worldIn = event.getWorld();
+        boolean setConnection = false;
+        RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
+        if (lookingAt != null) {
+            BlockPos pos = lookingAt.getBlockPos();
+            BlockWrapper block = new BlockWrapper(pos, event.getWorld().getBlockState(pos), event.getWorld());
+            if (!player.isSneaking()) {
+                EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+                if (sideToggled != null) {
+                    if (compat.isAcceptable(block)) {
+                        if (compat.getConnections(block).contains(sideToggled)) {
+                            compat.disconnect(block, sideToggled, player);
+                            compat.disconnect(block.offset(sideToggled), sideToggled.getOpposite(), player);
+                        } else {
+                            compat.connect(block, sideToggled, player);
+                            compat.connect(block.offset(sideToggled), sideToggled.getOpposite(), player);
+                        }
+                        setConnection = true;
+                    }
+                    worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
+                    block.state.getBlock().onNeighborChange(worldIn, block.pos, block.pos.offset(sideToggled, 1));
+                    BlockWrapper connectTo = block.offset(sideToggled);
+                    if (connectTo != null) {
+                        worldIn.notifyBlockUpdate(connectTo.pos, connectTo.state, connectTo.state, 3);
+                        connectTo.state.getBlock().onNeighborChange(worldIn, connectTo.pos, connectTo.pos.offset(sideToggled.getOpposite(), 1));
+                    }
+                }
+            }
+            for (int i = 0; i < BetterPipes.instance.COMPAT_LIST_NO_TE.size(); i++) BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, (i*2)+1));
+
+        }
+        if (setConnection) {
+            worldIn.playSound(player, player.getPosition(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            player.swingArm(EnumHand.MAIN_HAND);
+        }
+        return setConnection;
+    }
+
+
 
     public static Transformation[] sideRotations = new Transformation[]{//
             new Transformation(new Matrix4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
@@ -638,5 +689,23 @@ public class Utils {
     public static void update(TileEntity te) {
         te.markDirty();
         te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
+    }
+
+    public static boolean hasCapability(Capability<?> c, BlockWrapper b, EnumFacing f) {
+        if (b.world.getBlockState(b.pos.offset(f, 1)).getBlock().hasTileEntity(b.world.getBlockState(b.pos.offset(f, 1)))) {
+            return b.world.getTileEntity(b.pos.offset(f, 1)).hasCapability(c, f.getOpposite());
+        }
+        return false;
+    }
+
+    public static boolean hasCapability(Capability<?> c, TileEntity te, EnumFacing f) {
+        if (te.getWorld().getBlockState(te.getPos().offset(f, 1)).getBlock().hasTileEntity(te.getWorld().getBlockState(te.getPos()))) {
+            return te.getWorld().getTileEntity(te.getPos().offset(f, 1)).hasCapability(c, f.getOpposite());
+        }
+        return false;
+    }
+
+    public static BlockWrapper fromTE(TileEntity te, IBlockState state) {
+        return new BlockWrapper(te.getPos(), state, te.getWorld());
     }
 }
