@@ -8,7 +8,7 @@ import appeng.parts.misc.PartCableAnchor;
 import appeng.parts.networking.PartDenseCable;
 import appeng.tile.networking.TileCableBus;
 import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.AEBlockPart;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
 import flyingperson.BetterPipes.util.Utils;
@@ -24,14 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatAE2 extends CompatBase {
-
-    public CompatAE2() {
-        if (BPConfig.compat.ae2Wrench) {
-            if (AEApi.instance().definitions().items().certusQuartzWrench().maybeItem().isPresent()) BetterPipes.instance.WRENCH_LIST.add(AEApi.instance().definitions().items().certusQuartzWrench().maybeItem().get());
-            if (AEApi.instance().definitions().items().netherQuartzWrench().maybeItem().isPresent()) BetterPipes.instance.WRENCH_LIST.add(AEApi.instance().definitions().items().netherQuartzWrench().maybeItem().get());
-        }
-    }
+public class CompatAE2 extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -127,4 +120,6 @@ public class CompatAE2 extends CompatBase {
     public float getBreakSpeed() {
         return 60f;
     }
+
+
 }

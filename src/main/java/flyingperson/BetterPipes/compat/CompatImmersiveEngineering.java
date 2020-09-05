@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatImmersiveEngineering extends CompatBase {
+public class CompatImmersiveEngineering extends CompatBaseTE {
 
     public CompatImmersiveEngineering() {
         //if (BPConfig.compat.immersiveEngineeringWrench) BetterPipes.instance.WRENCH_LIST.add(IEContent.itemTool.)

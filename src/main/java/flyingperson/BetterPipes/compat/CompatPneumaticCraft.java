@@ -1,10 +1,12 @@
 package flyingperson.BetterPipes.compat;
 
 import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,10 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatPneumaticCraft extends CompatBase {
-    public CompatPneumaticCraft() {
-        if (BPConfig.compat.pneumaticcraftwrench) BetterPipes.instance.WRENCH_LIST.add(Item.REGISTRY.getObject(new ResourceLocation("pneumaticcraft", "pneumatic_wrench")));
-    }
+public class CompatPneumaticCraft extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -90,4 +89,5 @@ public class CompatPneumaticCraft extends CompatBase {
     public float getBreakSpeed() {
         return 100f;
     }
+
 }

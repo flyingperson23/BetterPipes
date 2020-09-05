@@ -1,9 +1,6 @@
 package flyingperson.BetterPipes.compat;
 
 import logisticspipes.LPBlocks;
-import logisticspipes.network.guis.upgrade.DisconnectionUpgradeConfigGuiProvider;
-import logisticspipes.network.packets.upgrade.ToogleDisconnectionUpgradeSidePacket;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -16,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatLogisticsPipes extends CompatBase {
+public class CompatLogisticsPipes extends CompatBaseTE {
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {

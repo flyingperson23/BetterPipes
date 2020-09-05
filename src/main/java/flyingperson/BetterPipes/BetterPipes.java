@@ -4,8 +4,8 @@ import flyingperson.BetterPipes.compat.*;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEEnergy;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
+import flyingperson.BetterPipes.compat.wrench.*;
 import flyingperson.BetterPipes.proxy.CommonProxy;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -45,7 +45,6 @@ public class BetterPipes
     public static CommonProxy proxy;
 
     public ArrayList<BlockPos> wrenchMap = new ArrayList<>();
-    public ArrayList<BlockPos> wrenchMapNoTE = new ArrayList<>();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -63,25 +62,55 @@ public class BetterPipes
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit(event);
-        if (BPConfig.compat.thermal && Loader.isModLoaded("thermaldynamics")) COMPAT_LIST.add(new CompatThermalDynamics());
-        if (BPConfig.compat.enderIO && Loader.isModLoaded("enderio")) COMPAT_LIST.add(new CompatEnderIO());
-        if (BPConfig.compat.ae2 && Loader.isModLoaded("appliedenergistics2")) COMPAT_LIST.add(new CompatAE2());
-        if (BPConfig.compat.bc && Loader.isModLoaded("buildcrafttransport")) COMPAT_LIST.add(new CompatBC());
-        if (BPConfig.compat.lp && Loader.isModLoaded("logisticspipes")) COMPAT_LIST.add(new CompatLogisticsPipes());
-        if (BPConfig.compat.immersiveEngineering && Loader.isModLoaded("immersiveengineering")) COMPAT_LIST.add(new CompatImmersiveEngineering());
-        if (BPConfig.compat.mekanism && Loader.isModLoaded("mekanism")) COMPAT_LIST.add(new CompatMekanism());
-        if (BPConfig.compat.cyclic && Loader.isModLoaded("cyclicmagic")) COMPAT_LIST.add(new CompatCyclic());
-        if (BPConfig.compat.pneumaticcraft && Loader.isModLoaded("pneumaticcraft")) COMPAT_LIST.add(new CompatPneumaticCraft());
+        if (BPConfig.wrenchCompat.addWrench) {
+            WRENCH_PROVIDERS.add(new DefaultWrenchProvider());
+        }
+        if (BPConfig.compat.vanilla) {
+            COMPAT_LIST.add(new CompatVanilla());
+        }
+        if (BPConfig.compat.thermal && Loader.isModLoaded("thermaldynamics")) {
+            COMPAT_LIST.add(new CompatThermalDynamics());
+            WRENCH_PROVIDERS.add(new ThermalDynamicsWrenchProvider());
+        }
+        if (BPConfig.compat.enderIO && Loader.isModLoaded("enderio")) {
+            COMPAT_LIST.add(new CompatEnderIO());
+            WRENCH_PROVIDERS.add(new EnderIOWrenchProvider());
+        }
+        if (BPConfig.compat.ae2 && Loader.isModLoaded("appliedenergistics2")) {
+            COMPAT_LIST.add(new CompatAE2());
+            WRENCH_PROVIDERS.add(new AE2WrenchProvider());
+        }
+        if (BPConfig.compat.bc && Loader.isModLoaded("buildcrafttransport")) {
+            COMPAT_LIST.add(new CompatBC());
+            WRENCH_PROVIDERS.add(new BCWrenchProvider());
+        }
+        if (BPConfig.compat.lp && Loader.isModLoaded("logisticspipes")) {
+            COMPAT_LIST.add(new CompatLogisticsPipes());
+        }
+        if (BPConfig.compat.immersiveEngineering && Loader.isModLoaded("immersiveengineering")) {
+            COMPAT_LIST.add(new CompatImmersiveEngineering());
+        }
+        if (BPConfig.compat.mekanism && Loader.isModLoaded("mekanism")) {
+            COMPAT_LIST.add(new CompatMekanism());
+            WRENCH_PROVIDERS.add(new MekanismWrenchProvider());
+        }
+        if (BPConfig.compat.cyclic && Loader.isModLoaded("cyclicmagic")) {
+            COMPAT_LIST.add(new CompatCyclic());
+        }
+        if (BPConfig.compat.pneumaticcraft && Loader.isModLoaded("pneumaticcraft")) {
+            COMPAT_LIST.add(new CompatPneumaticCraft());
+            WRENCH_PROVIDERS.add(new PneumaticCraftWrenchProvider());
+        }
         if (BPConfig.compat.gtce && Loader.isModLoaded("gregtech")) {
             COMPAT_LIST.add(new CompatGTCEItem());
             COMPAT_LIST.add(new CompatGTCEFluid());
             COMPAT_LIST.add(new CompatGTCEEnergy());
+            WRENCH_PROVIDERS.add(new GTCEWrenchProvider());
         }
-
-
         if (BPConfig.compat.exu2 && Loader.isModLoaded("extrautils2")) {
-            COMPAT_LIST_NO_TE.add(new CompatExU2());
+            COMPAT_LIST.add(new CompatExU2());
             COMPAT_LIST.add(new CompatExU2TE());
+            WRENCH_PROVIDERS.add(new ExU2WrenchProvider());
         }
     }
 
@@ -92,9 +121,7 @@ public class BetterPipes
         }
     }
 
-    public ArrayList<CompatBase> COMPAT_LIST = new ArrayList<>();
-    public ArrayList<CompatBaseNoTE> COMPAT_LIST_NO_TE = new ArrayList<>();
-
-    public ArrayList<Item> WRENCH_LIST = new ArrayList<>();
+    public ArrayList<ICompatBase> COMPAT_LIST = new ArrayList<>();
+    public ArrayList<IWrenchProvider> WRENCH_PROVIDERS = new ArrayList<>();
 
 }

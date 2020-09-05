@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatCyclic extends CompatBase {
+public class CompatCyclic extends CompatBaseTE {
+
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (te instanceof TileEntityCableBase) {

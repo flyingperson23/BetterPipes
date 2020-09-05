@@ -1,7 +1,8 @@
 package flyingperson.BetterPipes.compat.gtce;
 
+import flyingperson.BetterPipes.compat.CompatBaseTE;
 import flyingperson.BetterPipes.util.Utils;
-import flyingperson.BetterPipes.compat.CompatBase;
+import flyingperson.BetterPipes.compat.ICompatBase;
 import gregtech.api.pipenet.tile.AttachmentType;
 import gregtech.common.pipelike.inventory.tile.TileEntityInventoryPipe;
 import net.minecraft.block.Block;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatGTCEItem extends CompatBase {
+public class CompatGTCEItem extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {

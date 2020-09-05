@@ -1,15 +1,13 @@
 package flyingperson.BetterPipes.util;
 
 import flyingperson.BetterPipes.BetterPipes;
-import flyingperson.BetterPipes.IBetterPipesWrench;
 import flyingperson.BetterPipes.ModSounds;
-import flyingperson.BetterPipes.compat.CompatBase;
-import flyingperson.BetterPipes.compat.CompatBaseNoTE;
+import flyingperson.BetterPipes.compat.ICompatBase;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.network.MessageGetConnections;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,7 +19,6 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import org.jline.utils.InfoCmp;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Vector3d;
@@ -531,58 +528,14 @@ public class Utils {
     }
 
     public static boolean isValidWrench(Item item) {
-        return BetterPipes.instance.WRENCH_LIST.contains(item) || item instanceof IBetterPipesWrench;
+        for (IWrenchProvider c : BetterPipes.instance.WRENCH_PROVIDERS) {
+                if (c.enable() && c.isAcceptable(new ItemStack(item))) return true;
+        }
+        return false;
     }
 
-    public static boolean wrenchUse(PlayerInteractEvent event, CompatBase compat) {
-        EntityPlayer player = event.getEntityPlayer();
-        World worldIn = event.getWorld();
-        boolean setConnection = false;
-        RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
-        if (lookingAt != null) {
-            BlockPos pos = lookingAt.getBlockPos();
-            TileEntity te = worldIn.getTileEntity(pos);
-            if (te != null) {
-                if (!player.isSneaking()) {
-                    EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
-                    if (sideToggled != null) {
-                        if (compat.isAcceptable(te)) {
-                            if (compat.getConnections(te).contains(sideToggled)) {
-                                compat.disconnect(te, sideToggled, player);
-                                compat.disconnect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
-                            } else {
-                                compat.connect(te, sideToggled, player);
-                                compat.connect(worldIn.getTileEntity(pos.offset(sideToggled, 1)), sideToggled.getOpposite(), player);
-                            }
-                            setConnection = true;
-                        }
-                        worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
-                        te.getBlockType().onNeighborChange(worldIn, te.getPos(), te.getPos().offset(sideToggled, 1));
-                        te.markDirty();
-                        TileEntity connectTo = worldIn.getTileEntity(pos.offset(sideToggled, 1));
-                        if (connectTo != null) {
-                            worldIn.notifyBlockUpdate(connectTo.getPos(), worldIn.getBlockState(connectTo.getPos()), worldIn.getBlockState(connectTo.getPos()), 3);
-                            connectTo.getBlockType().onNeighborChange(worldIn, connectTo.getPos(), connectTo.getPos().offset(sideToggled.getOpposite(), 1));
-                            connectTo.markDirty();
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < BetterPipes.instance.COMPAT_LIST.size(); i++) BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, i*2));
-
-        }
-        if (setConnection) {
-            worldIn.playSound(player, player.getPosition(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
-            player.swingArm(EnumHand.MAIN_HAND);
-        }
-        return setConnection;
-    }
-
-
-
-
-
-    public static boolean wrenchUse(PlayerInteractEvent event, CompatBaseNoTE compat) {
+    public static boolean wrenchUse(PlayerInteractEvent event, int compatID) {
+        ICompatBase compat = BetterPipes.instance.COMPAT_LIST.get(compatID);
         EntityPlayer player = event.getEntityPlayer();
         World worldIn = event.getWorld();
         boolean setConnection = false;
@@ -612,7 +565,7 @@ public class Utils {
                     }
                 }
             }
-            for (int i = 0; i < BetterPipes.instance.COMPAT_LIST_NO_TE.size(); i++) BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, (i*2)+1));
+            BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, compatID));
 
         }
         if (setConnection) {

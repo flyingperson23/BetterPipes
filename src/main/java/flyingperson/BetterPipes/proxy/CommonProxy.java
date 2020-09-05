@@ -41,7 +41,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        if (BPConfig.compat.addWrench) event.getRegistry().register(new ItemWrench());
+        if (BPConfig.wrenchCompat.addWrench) event.getRegistry().register(new ItemWrench());
         if (Loader.isModLoaded("appliedenergistics2")) RegisterAEStuff.registerItems(event);
     }
 

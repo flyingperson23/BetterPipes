@@ -6,7 +6,7 @@ import crazypants.enderio.base.conduit.IServerConduit;
 import crazypants.enderio.conduits.conduit.TileConduitBundle;
 import crazypants.enderio.conduits.init.ConduitObject;
 import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -22,11 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatEnderIO extends CompatBase {
-
-    public CompatEnderIO() {
-        if (BPConfig.compat.enderIOWrench) BetterPipes.instance.WRENCH_LIST.add(Item.REGISTRY.getObject(new ResourceLocation("enderio", "item_yeta_wrench")));
-    }
+public class CompatEnderIO extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {

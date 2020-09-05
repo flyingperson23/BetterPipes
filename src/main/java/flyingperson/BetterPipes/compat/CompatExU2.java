@@ -5,7 +5,8 @@ import com.rwtema.extrautils2.transfernodes.BlockTransferHolder;
 import com.rwtema.extrautils2.transfernodes.BlockTransferPipe;
 import com.rwtema.extrautils2.transfernodes.IPipe;
 import com.rwtema.extrautils2.transfernodes.TileTransferHolder;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.BPConfig;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.BlockWrapper;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
@@ -21,11 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatExU2 extends CompatBaseNoTE {
-
-    public CompatExU2() {
-        BetterPipes.instance.WRENCH_LIST.add(Item.REGISTRY.getObject(new ResourceLocation("extrautils2", "wrench")));
-    }
+public class CompatExU2 implements ICompatBase {
 
     @Override
     public boolean canConnect(BlockWrapper block, EnumFacing direction) {
@@ -100,4 +97,5 @@ public class CompatExU2 extends CompatBaseNoTE {
     public float getBreakSpeed() {
         return 10f;
     }
+
 }

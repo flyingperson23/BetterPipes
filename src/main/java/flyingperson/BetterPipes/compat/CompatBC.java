@@ -4,7 +4,7 @@ import buildcraft.api.BCItems;
 import buildcraft.transport.BCTransportBlocks;
 import buildcraft.transport.tile.TilePipeHolder;
 import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.BCBlockPart;
 import flyingperson.BetterPipes.util.RegisterBCStuff;
 import flyingperson.BetterPipes.util.Utils;
@@ -20,11 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatBC extends CompatBase {
-
-    public CompatBC() {
-        if (BPConfig.compat.bcWrench) BetterPipes.instance.WRENCH_LIST.add(BCItems.Core.WRENCH);
-    }
+public class CompatBC extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
@@ -96,4 +92,5 @@ public class CompatBC extends CompatBase {
     public float getBreakSpeed() {
         return 20f;
     }
+
 }

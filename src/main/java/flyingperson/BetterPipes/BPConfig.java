@@ -26,6 +26,8 @@ public class BPConfig {
     public static Compat compat = new Compat();
     @Config.RequiresMcRestart
     public static class Compat {
+        @Config.Comment("Compat for vanilla?")
+        public boolean vanilla = true;
         @Config.Comment("Compat for GTCE?")
         public boolean gtce = true;
         @Config.Comment("Compat for AE2?")
@@ -48,7 +50,11 @@ public class BPConfig {
         public boolean pneumaticcraft = true;
         @Config.Comment("Compat for ExU2?")
         public boolean exu2 = true;
+    }
 
+    @Config.Comment("Add other mods' wrenches?")
+    public static WrenchCompat wrenchCompat = new WrenchCompat();
+    public static class WrenchCompat {
         @Config.Comment("Compat for GTCE wrenches?")
         public boolean gtceWrench = true;
         @Config.Comment("Compat for AE2 wrenches?")

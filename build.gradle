@@ -45,6 +45,7 @@ dependencies {
     compile "curse.maven:mcmultipart:2615930"
     compile "curse.maven:bdlib:2518031"
     compile "curse.maven:mcjtylib:2745846"
+    compileOnly "curse.maven:industrial-craft:2980904"
 
     //content mods changed
     compileOnly "curse.maven:pneumaticcraft-repressurized:2978408"

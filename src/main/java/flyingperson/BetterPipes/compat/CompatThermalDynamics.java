@@ -8,7 +8,7 @@ import cofh.thermaldynamics.duct.tiles.*;
 import cofh.thermaldynamics.init.TDBlocks;
 import cofh.thermalfoundation.init.TFItems;
 import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -26,11 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatThermalDynamics extends CompatBase {
-
-    public CompatThermalDynamics() {
-        if (BPConfig.compat.thermalWrench) BetterPipes.instance.WRENCH_LIST.add(TFItems.itemWrench);
-    }
+public class CompatThermalDynamics extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {

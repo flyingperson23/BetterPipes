@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatExU2TE extends CompatBase{
+public class CompatExU2TE extends CompatBaseTE {
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {

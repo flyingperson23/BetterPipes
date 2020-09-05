@@ -1,7 +1,7 @@
 package flyingperson.BetterPipes.compat;
 
 import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
 import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
@@ -21,11 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatMekanism extends CompatBase {
-
-    public CompatMekanism() {
-        if (BPConfig.compat.mekanismWrench) BetterPipes.instance.WRENCH_LIST.add(MekanismItems.Configurator);
-    }
+public class CompatMekanism extends CompatBaseTE {
 
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
