@@ -2,7 +2,7 @@ Makes mods from other pipes work like GT6 pipes
 Mods supported:
 Vanilla
 Gregtech Community Edition
-AE2 (dense only)
+AE2 (dense and smart)
 Buildcraft
 Cyclic
 EnderIO

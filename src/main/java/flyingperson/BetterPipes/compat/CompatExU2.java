@@ -3,35 +3,32 @@ package flyingperson.BetterPipes.compat;
 import com.rwtema.extrautils2.backend.entries.XU2Entries;
 import com.rwtema.extrautils2.transfernodes.BlockTransferHolder;
 import com.rwtema.extrautils2.transfernodes.BlockTransferPipe;
-import com.rwtema.extrautils2.transfernodes.IPipe;
 import com.rwtema.extrautils2.transfernodes.TileTransferHolder;
-import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.BlockWrapper;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class CompatExU2 implements ICompatBase {
 
     @Override
     public boolean canConnect(BlockWrapper block, EnumFacing direction) {
-        if (block.state.getBlock() instanceof IPipe) {
-            if (Utils.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, block, direction) || block.offset(direction).state.getBlock() instanceof BlockTransferPipe || block.offset(direction).state.getBlock() instanceof BlockTransferHolder) return true;
-            if (block.world.getTileEntity(block.pos.offset(direction, 1)) instanceof TileTransferHolder) return true;
-            return BlockTransferPipe.shouldConnectTile(block.world, block.pos, direction, (IPipe) block.state.getBlock()) | BlockTransferPipe.shouldConnectPipe(block.world, block.pos, direction, (IPipe) block.state.getBlock());
-        }
-        return false;
+        if (Utils.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, block.offset(direction), direction.getOpposite())) return true;
+        if (Utils.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, block.offset(direction), direction.getOpposite())) return true;
+        if (Utils.hasCapability(CapabilityEnergy.ENERGY, block.offset(direction), direction.getOpposite())) return true;
+        if (Utils.getBlockOffset(block, direction) instanceof BlockTransferPipe) return true;
+        return Utils.getBlockOffset(block, direction) instanceof BlockTransferHolder;
     }
 
     @Override
@@ -39,11 +36,23 @@ public class CompatExU2 implements ICompatBase {
         ArrayList<EnumFacing> connections = new ArrayList<>();
         if (isAcceptable(block)) {
             for (EnumFacing facing : EnumFacing.values()) {
-                if (BlockTransferPipe.isUnblocked(block.state, facing) && canConnect(block, facing)) {
-                    connections.add(facing);
-                }
-                if (BlockTransferPipe.shouldConnectPipe(block.world, block.pos, facing, (IPipe) block.state.getBlock()) | BlockTransferPipe.shouldConnectTile(block.world, block.pos, facing, (IPipe) block.state.getBlock())) {
-                    connections.add(facing);
+                if (Utils.getBlockOffset(block, facing) instanceof BlockTransferPipe) {
+                    if (BlockTransferPipe.isUnblocked(block.state, facing) && BlockTransferPipe.isUnblocked(block.offset(facing).state, facing.getOpposite())) connections.add(facing);
+                } else if (Utils.getBlockOffset(block, facing) instanceof BlockTransferHolder) {
+                    if (BlockTransferPipe.isUnblocked(block.state, facing) &&
+                            BlockTransferPipe.isUnblocked(Objects.requireNonNull(TileTransferHolder.getCenterPipeState(((TileTransferHolder) Objects.requireNonNull(block.world.getTileEntity(block.pos.offset(facing, 1)))).getCenterPipeIndex())), facing.getOpposite())) connections.add(facing);
+                } else {
+                    if (BlockTransferPipe.isUnblocked(block.state, facing)) {
+                        if (Utils.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, block.offset(facing), facing.getOpposite())) {
+                            connections.add(facing);
+                        }
+                        if (Utils.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, block.offset(facing), facing.getOpposite())) {
+                            connections.add(facing);
+                        }
+                        if (Utils.hasCapability(CapabilityEnergy.ENERGY, block.offset(facing), facing.getOpposite())) {
+                            connections.add(facing);
+                        }
+                    }
                 }
             }
         }
@@ -73,14 +82,16 @@ public class CompatExU2 implements ICompatBase {
 
     public void connect2(BlockWrapper block, EnumFacing direction) {
         if (isAcceptable(block) && canConnect(block, direction)) {
-            block.world.setBlockState(block.pos, block.state.withProperty(BlockTransferPipe.SIDE_BLOCKED.get(direction), false));
+            block.world.setBlockState(block.pos, block.world.getBlockState(block.pos).withProperty(BlockTransferPipe.SIDE_BLOCKED.get(direction), false));
         }
+        Utils.update(block, direction);
     }
 
     public void disconnect2(BlockWrapper block, EnumFacing direction) {
         if (isAcceptable(block) && canConnect(block, direction)) {
-            block.world.setBlockState(block.pos, block.state.withProperty(BlockTransferPipe.SIDE_BLOCKED.get(direction), true));
+            block.world.setBlockState(block.pos, block.world.getBlockState(block.pos).withProperty(BlockTransferPipe.SIDE_BLOCKED.get(direction), true));
         }
+        Utils.update(block, direction);
     }
 
     @Override

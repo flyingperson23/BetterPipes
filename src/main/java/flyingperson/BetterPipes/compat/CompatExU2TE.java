@@ -3,7 +3,6 @@ package flyingperson.BetterPipes.compat;
 import com.rwtema.extrautils2.backend.entries.XU2Entries;
 import com.rwtema.extrautils2.transfernodes.BlockTransferHolder;
 import com.rwtema.extrautils2.transfernodes.BlockTransferPipe;
-import com.rwtema.extrautils2.transfernodes.IPipe;
 import com.rwtema.extrautils2.transfernodes.TileTransferHolder;
 import flyingperson.BetterPipes.util.BlockWrapper;
 import flyingperson.BetterPipes.util.Utils;
@@ -14,19 +13,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class CompatExU2TE extends CompatBaseTE {
     @Override
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
-            if (Utils.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, te, direction) || te.getWorld().getBlockState(te.getPos().offset(direction, 1)).getBlock() instanceof BlockTransferPipe || te.getWorld().getBlockState(te.getPos().offset(direction, 1)).getBlock() instanceof BlockTransferHolder) return true;
-            if (te.getWorld().getTileEntity(te.getPos().offset(direction, 1)) instanceof TileTransferHolder) return true;
-            return BlockTransferPipe.shouldConnectTile(te.getWorld(), te.getPos(), direction, (IPipe) te) | BlockTransferPipe.shouldConnectPipe(te.getWorld(), te.getPos(), direction, (IPipe) te);
+            if (Utils.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Utils.fromTE(te).offset(direction), direction.getOpposite())) return true;
+            if (Utils.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Utils.fromTE(te).offset(direction), direction.getOpposite())) return true;
+            if (Utils.hasCapability(CapabilityEnergy.ENERGY, Utils.fromTE(te).offset(direction), direction.getOpposite())) return true;
+
+            if (Utils.getBlockOffset(te, direction) instanceof BlockTransferPipe) return true;
+            return Utils.getBlockOffset(te, direction) instanceof BlockTransferHolder;
         }
         return false;
     }
@@ -36,14 +41,24 @@ public class CompatExU2TE extends CompatBaseTE {
         ArrayList<EnumFacing> connections = new ArrayList<>();
         if (isAcceptable(te)) {
             for (EnumFacing facing : EnumFacing.values()) {
-                IBlockState state = TileTransferHolder.getCenterPipeState(((TileTransferHolder) te).getCenterPipeIndex());
-                if (state != null) {
-                    if (BlockTransferPipe.isUnblocked(state, facing) && canConnect(te, facing)) {
-                        connections.add(facing);
+                if (Utils.getBlockOffset(te, facing) instanceof BlockTransferHolder) {
+                    if (BlockTransferPipe.isUnblocked(Objects.requireNonNull(TileTransferHolder.getCenterPipeState(((TileTransferHolder) te).getCenterPipeIndex())), facing) &&
+                            BlockTransferPipe.isUnblocked(Objects.requireNonNull(TileTransferHolder.getCenterPipeState(((TileTransferHolder) Objects.requireNonNull(Utils.fromTE(te).world.getTileEntity(Utils.fromTE(te).pos.offset(facing, 1)))).getCenterPipeIndex())), facing.getOpposite())) connections.add(facing);
+                } else if (Utils.getBlockOffset(te, facing) instanceof BlockTransferPipe) {
+                    if (BlockTransferPipe.isUnblocked(Objects.requireNonNull(TileTransferHolder.getCenterPipeState(((TileTransferHolder) te).getCenterPipeIndex())), facing) &&
+                            BlockTransferPipe.isUnblocked(Utils.fromTE(te).offset(facing).state, facing.getOpposite())) connections.add(facing);
+                } else {
+                    if (BlockTransferPipe.isUnblocked(Objects.requireNonNull(TileTransferHolder.getCenterPipeState(((TileTransferHolder) te).getCenterPipeIndex())), facing)) {
+                        if (Utils.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Utils.fromTE(te).offset(facing), facing.getOpposite())) {
+                            connections.add(facing);
+                        }
+                        if (Utils.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Utils.fromTE(te).offset(facing), facing.getOpposite())) {
+                            connections.add(facing);
+                        }
+                        if (Utils.hasCapability(CapabilityEnergy.ENERGY, Utils.fromTE(te).offset(facing), facing.getOpposite())) {
+                            connections.add(facing);
+                        }
                     }
-                }
-                if (BlockTransferPipe.shouldConnectPipe(te.getWorld(), te.getPos(), facing, (IPipe) te) | BlockTransferPipe.shouldConnectTile(te.getWorld(), te.getPos(), facing, (IPipe) te)) {
-                    connections.add(facing);
                 }
             }
         }
@@ -57,7 +72,7 @@ public class CompatExU2TE extends CompatBaseTE {
 
     @Override
     public void connect(TileEntity te, EnumFacing direction, EntityPlayer player) {
-        if (isAcceptable(te)) {
+        if (te != null) {
             connect2(te, direction);
             IBlockState state = te.getWorld().getBlockState(te.getPos().offset(direction, 1));
             if (state.getBlock() instanceof BlockTransferPipe) {
@@ -68,7 +83,7 @@ public class CompatExU2TE extends CompatBaseTE {
 
     @Override
     public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
-        if (isAcceptable(te)) {
+        if (te != null) {
             disconnect2(te, direction);
             IBlockState state = te.getWorld().getBlockState(te.getPos().offset(direction, 1));
             if (state.getBlock() instanceof BlockTransferPipe) {
@@ -87,6 +102,7 @@ public class CompatExU2TE extends CompatBaseTE {
                 nbt.setByte("CenterPipeState", b);
                 tile.readFromNBT(nbt);
             }
+            Utils.update(Utils.fromTE(te), direction);
         }
     }
 
@@ -100,6 +116,7 @@ public class CompatExU2TE extends CompatBaseTE {
                 nbt.setByte("CenterPipeState", b);
                 tile.readFromNBT(nbt);
             }
+            Utils.update(Utils.fromTE(te), direction);
         }
     }
 

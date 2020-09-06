@@ -11,6 +11,10 @@ public class BPConfig {
         public boolean sneaking_makes_pipes_connect = false;
         @Config.Comment("Should pipes connect when placed on each other?")
         public boolean clicking_on_pipes_connects_them = true;
+        @Config.Comment("Range for full volume wrench sound?")
+        public double full_volume_wrench = 2;
+        @Config.Comment("Range for partial volume wrench sound?")
+        public double partial_volume_wrench = 4;
     }
 
     @Config.Comment("Visual settings")
@@ -73,6 +77,8 @@ public class BPConfig {
         public boolean pneumaticcraftwrench = true;
         @Config.Comment("Compat for ExU2 wrench?")
         public boolean exu2wrench = true;
+        @Config.Comment("Compat for IC2 wrench (Classic and experimental)?")
+        public boolean ic2wrench = true;
         @Config.Comment("Should a wrench from this mod be added?")
         public boolean addWrench = true;
     }

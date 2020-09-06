@@ -24,11 +24,10 @@ public class AE2WrenchProvider implements IWrenchProvider{
 
     @Override
     public boolean canBeUsed(ItemStack item, EntityPlayer player) {
-        return isAcceptable(item) && item.getItemDamage()<item.getMaxDamage();
+        return true;
     }
 
     @Override
     public void use(ItemStack item, EntityPlayer player) {
-        item.damageItem(1, player);
     }
 }

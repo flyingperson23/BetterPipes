@@ -1,20 +1,23 @@
 package flyingperson.BetterPipes.util;
 
+import flyingperson.BetterPipes.BPConfig;
 import flyingperson.BetterPipes.BetterPipes;
-import flyingperson.BetterPipes.ModSounds;
+import flyingperson.BetterPipes.compat.CompatVanilla;
 import flyingperson.BetterPipes.compat.ICompatBase;
 import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.network.MessageGetConnections;
+import flyingperson.BetterPipes.network.MessagePlaySound;
+import flyingperson.BetterPipes.network.MessageSwingArm;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -24,6 +27,7 @@ import javax.annotation.Nullable;
 import javax.vecmath.Vector3d;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Utils {
 
@@ -535,44 +539,73 @@ public class Utils {
     }
 
     public static boolean wrenchUse(PlayerInteractEvent event, int compatID) {
-        ICompatBase compat = BetterPipes.instance.COMPAT_LIST.get(compatID);
-        EntityPlayer player = event.getEntityPlayer();
-        World worldIn = event.getWorld();
-        boolean setConnection = false;
-        RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
-        if (lookingAt != null) {
-            BlockPos pos = lookingAt.getBlockPos();
-            BlockWrapper block = new BlockWrapper(pos, event.getWorld().getBlockState(pos), event.getWorld());
-            if (!player.isSneaking()) {
-                EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
-                if (sideToggled != null) {
-                    if (compat.isAcceptable(block)) {
-                        if (compat.getConnections(block).contains(sideToggled)) {
-                            compat.disconnect(block, sideToggled, player);
-                            compat.disconnect(block.offset(sideToggled), sideToggled.getOpposite(), player);
-                        } else {
-                            compat.connect(block, sideToggled, player);
-                            compat.connect(block.offset(sideToggled), sideToggled.getOpposite(), player);
+        if (!event.getWorld().isRemote) {
+            ICompatBase compat = BetterPipes.instance.COMPAT_LIST.get(compatID);
+            EntityPlayer player = event.getEntityPlayer();
+            World worldIn = event.getWorld();
+            BlockPos setConnection = null;
+            RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
+            if (lookingAt != null) {
+                BlockPos pos = lookingAt.getBlockPos();
+                BlockWrapper block = new BlockWrapper(pos, event.getWorld().getBlockState(pos), event.getWorld());
+                if (!player.isSneaking()) {
+                    EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+                    if (sideToggled != null) {
+                        if (compat.isAcceptable(block)) {
+                            if (compat.getConnections(block).contains(sideToggled)) {
+                                compat.disconnect(block, sideToggled, player);
+                                if (!(compat instanceof CompatVanilla))
+                                compat.disconnect(block.offset(sideToggled), sideToggled.getOpposite(), player);
+                            } else {
+                                compat.connect(block, sideToggled, player);
+                                if (!(compat instanceof CompatVanilla)) compat.connect(block.offset(sideToggled), sideToggled.getOpposite(), player);
+                            }
+                            setConnection = pos;
                         }
-                        setConnection = true;
-                    }
-                    worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
-                    block.state.getBlock().onNeighborChange(worldIn, block.pos, block.pos.offset(sideToggled, 1));
-                    BlockWrapper connectTo = block.offset(sideToggled);
-                    if (connectTo != null) {
-                        worldIn.notifyBlockUpdate(connectTo.pos, connectTo.state, connectTo.state, 3);
-                        connectTo.state.getBlock().onNeighborChange(worldIn, connectTo.pos, connectTo.pos.offset(sideToggled.getOpposite(), 1));
+                        worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
+                        block.state.getBlock().onNeighborChange(worldIn, block.pos, block.pos.offset(sideToggled, 1));
+                        BlockWrapper connectTo = block.offset(sideToggled);
+                        if (connectTo != null) {
+                            worldIn.notifyBlockUpdate(connectTo.pos, connectTo.state, connectTo.state, 3);
+                            connectTo.state.getBlock().onNeighborChange(worldIn, connectTo.pos, connectTo.pos.offset(sideToggled.getOpposite(), 1));
+                        }
                     }
                 }
-            }
-            BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, compatID));
+                BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos, compatID));
 
+            }
+            if (setConnection != null) {
+                double effective_full_volume_range = BPConfig.general.full_volume_wrench > 0 ? BPConfig.general.full_volume_wrench : 0.1;
+                double effective_partial_volume_range = BPConfig.general.partial_volume_wrench > 0 ? BPConfig.general.partial_volume_wrench : 0.1;
+                
+                double aabbRange = effective_full_volume_range + effective_partial_volume_range;
+                Vec3d setConnectionVector = new Vec3d(setConnection.getX(), setConnection.getY(), setConnection.getZ()).addVector(0.5, 0.5, 0.5);
+                AxisAlignedBB max_aabb = new AxisAlignedBB(-1*aabbRange, -1*aabbRange, -1*aabbRange, aabbRange, aabbRange, aabbRange).offset(setConnectionVector);
+                List<EntityPlayer> full_play_list = worldIn.getEntitiesWithinAABB(EntityPlayer.class, max_aabb);
+                List<EntityPlayer> partial_sound_play_list = worldIn.getEntitiesWithinAABB(EntityPlayer.class, max_aabb);
+                full_play_list.removeIf((i) -> i.getPositionVector().distanceTo(setConnectionVector) > effective_full_volume_range);
+                partial_sound_play_list.removeIf((i) -> i.getPositionVector().distanceTo(setConnectionVector) > effective_full_volume_range+effective_partial_volume_range);
+                partial_sound_play_list.removeIf(full_play_list::contains);
+
+                for (EntityPlayer full_sound : full_play_list) {
+                    if (full_sound instanceof EntityPlayerMP) {
+                        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendTo(new MessagePlaySound(1.0F), (EntityPlayerMP) full_sound);
+                    }
+                }
+
+                for (EntityPlayer partial_sound : partial_sound_play_list) {
+                    if (partial_sound instanceof EntityPlayerMP) {
+                        float volume = 1.0F - (float) ((partial_sound.getPositionVector().distanceTo(new Vec3d(setConnection.getX(), setConnection.getY(), setConnection.getZ()).addVector(0.5, 0.5, 0.5)) - effective_full_volume_range)/effective_partial_volume_range);
+                        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendTo(new MessagePlaySound(volume), (EntityPlayerMP) partial_sound);
+                    }
+                }
+                if (player instanceof EntityPlayerMP) {
+                    BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendTo(new MessageSwingArm(), (EntityPlayerMP) player);
+                }
+            }
+            return setConnection != null;
         }
-        if (setConnection) {
-            worldIn.playSound(player, player.getPosition(), ModSounds.wrench_sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
-            player.swingArm(EnumHand.MAIN_HAND);
-        }
-        return setConnection;
+        return false;
     }
 
 
@@ -644,21 +677,33 @@ public class Utils {
         te.getWorld().notifyBlockUpdate(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld().getBlockState(te.getPos()), 3);
     }
 
+    public static void update(BlockWrapper block, EnumFacing f) {
+        block.world.notifyBlockUpdate(block.pos, block.state, block.state, 3);
+        block.world.notifyBlockUpdate(block.offset(f).pos, block.offset(f).state, block.offset(f).state, 3);
+        block.state.getBlock().onNeighborChange(block.world, block.pos, block.pos.offset(f));
+        block.offset(f).state.getBlock().onNeighborChange(block.world, block.offset(f).pos, block.pos);
+    }
+
     public static boolean hasCapability(Capability<?> c, BlockWrapper b, EnumFacing f) {
-        if (b.world.getBlockState(b.pos.offset(f, 1)).getBlock().hasTileEntity(b.world.getBlockState(b.pos.offset(f, 1)))) {
-            return b.world.getTileEntity(b.pos.offset(f, 1)).hasCapability(c, f.getOpposite());
+        if (b.state.getBlock().hasTileEntity(b.state)) {
+            return b.world.getTileEntity(b.pos).hasCapability(c, f);
         }
         return false;
     }
 
-    public static boolean hasCapability(Capability<?> c, TileEntity te, EnumFacing f) {
-        if (te.getWorld().getBlockState(te.getPos().offset(f, 1)).getBlock().hasTileEntity(te.getWorld().getBlockState(te.getPos()))) {
-            return te.getWorld().getTileEntity(te.getPos().offset(f, 1)).hasCapability(c, f.getOpposite());
-        }
-        return false;
+    public static Block getBlockOffset(TileEntity te, EnumFacing d) {
+        return getBlockOffset(fromTE(te), d);
     }
 
-    public static BlockWrapper fromTE(TileEntity te, IBlockState state) {
-        return new BlockWrapper(te.getPos(), state, te.getWorld());
+    public static Block getBlockOffset(BlockWrapper b, EnumFacing d) {
+        return b.world.getBlockState(b.pos.offset(d, 1)).getBlock();
+    }
+
+    public static BlockWrapper fromTE(TileEntity te) {
+        return new BlockWrapper(te.getPos(), te.getWorld().getBlockState(te.getPos()), te.getWorld());
+    }
+
+    public static boolean isHorizontal(EnumFacing c) {
+        return c != EnumFacing.UP && c != EnumFacing.DOWN && c != null;
     }
 }

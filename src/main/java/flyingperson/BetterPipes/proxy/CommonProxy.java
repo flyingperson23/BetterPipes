@@ -5,7 +5,9 @@ import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.ModSounds;
 import flyingperson.BetterPipes.item.ItemWrench;
 import flyingperson.BetterPipes.network.MessageGetConnections;
+import flyingperson.BetterPipes.network.MessagePlaySound;
 import flyingperson.BetterPipes.network.MessageReturnConnections;
+import flyingperson.BetterPipes.network.MessageSwingArm;
 import flyingperson.BetterPipes.util.RegisterAEStuff;
 import flyingperson.BetterPipes.util.RegisterBCStuff;
 import net.minecraft.item.Item;
@@ -32,8 +34,10 @@ public class CommonProxy {
     public void init(FMLInitializationEvent e) {
         ConfigManager.sync(BetterPipes.MODID, Config.Type.INSTANCE);
 
-        BetterPipes.INSTANCE.registerMessage(MessageGetConnections.MessageHandler.class, MessageGetConnections.class, 0, Side.SERVER);
-        BetterPipes.INSTANCE.registerMessage(MessageReturnConnections.MessageHandler.class, MessageReturnConnections.class, 1, Side.CLIENT);
+        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.registerMessage(MessageGetConnections.MessageHandler.class, MessageGetConnections.class, 0, Side.SERVER);
+        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.registerMessage(MessageReturnConnections.MessageHandler.class, MessageReturnConnections.class, 1, Side.CLIENT);
+        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.registerMessage(MessagePlaySound.MessageHandler.class, MessagePlaySound.class, 2, Side.CLIENT);
+        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.registerMessage(MessageSwingArm.MessageHandler.class, MessageSwingArm.class, 3, Side.CLIENT);
     }
 
     public void postInit(FMLPostInitializationEvent e) {

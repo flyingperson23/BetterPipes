@@ -5,6 +5,7 @@ import appeng.api.networking.IGridHost;
 import appeng.api.parts.IPart;
 import appeng.api.util.AEPartLocation;
 import appeng.parts.misc.PartCableAnchor;
+import appeng.parts.networking.PartCable;
 import appeng.parts.networking.PartDenseCable;
 import appeng.tile.networking.TileCableBus;
 import flyingperson.BetterPipes.BPConfig;
@@ -30,10 +31,18 @@ public class CompatAE2 extends CompatBaseTE {
     public boolean canConnect(TileEntity te, EnumFacing direction) {
         if (isAcceptable(te)) {
             TileCableBus tile = (TileCableBus) te;
-            if (isAcceptable(tile.getWorld().getTileEntity(te.getPos().offset(direction, 1)))) return true;
+            TileEntity connectTo = tile.getWorld().getTileEntity(tile.getPos().offset(direction, 1));
             if (tile.getCableBus().getCableConnectionType(AEPartLocation.fromFacing(direction)).isValid() && te.getWorld().getTileEntity(te.getPos().offset(direction, 1)) instanceof IGridHost && (!tile.isBlocked(direction))) {
-                IPart part = tile.getPart(AEPartLocation.fromFacing(direction));
-                return part == null | part instanceof AEBlockPart;
+                if (connectTo != null) {
+                    if (isAcceptable(connectTo)) {
+                        IPart part = tile.getPart(AEPartLocation.fromFacing(direction));
+                        IPart part2 = ((TileCableBus) connectTo).getPart(AEPartLocation.fromFacing(direction.getOpposite()));
+                        return (part == null | part instanceof AEBlockPart) && (part2 == null | part2 instanceof AEBlockPart);
+                    } else if (tile.getCableBus().getCableConnectionType(AEPartLocation.fromFacing(direction)).isValid() && connectTo instanceof IGridHost && (!tile.isBlocked(direction))) {
+                        IPart part = tile.getPart(AEPartLocation.fromFacing(direction));
+                        return part == null | part instanceof AEBlockPart;
+                    }
+                }
             }
         }
         return false;
@@ -45,9 +54,15 @@ public class CompatAE2 extends CompatBaseTE {
         if (isAcceptable(te)) {
             TileCableBus tile = (TileCableBus) te;
             for (EnumFacing facing : EnumFacing.VALUES) {
+                IPart part = tile.getPart(AEPartLocation.fromFacing(facing));
+                if (!(part instanceof AEBlockPart || part instanceof PartCableAnchor || part == null)) {
+                    connections.add(facing);
+                }
                 if (tile.getCableBus().getCableConnectionType(AEPartLocation.fromFacing(facing)).isValid() && te.getWorld().getTileEntity(te.getPos().offset(facing, 1)) instanceof IGridHost && (!tile.isBlocked(facing))) {
-                    IPart part = tile.getPart(AEPartLocation.fromFacing(facing));
-                    if (!(part instanceof AEBlockPart | part instanceof PartCableAnchor)) {
+                    TileEntity connectTo = te.getWorld().getTileEntity(te.getPos().offset(facing, 1));
+                    if (connectTo instanceof TileCableBus) {
+                        if (part == null && ((TileCableBus) connectTo).getPart(facing.getOpposite()) == null) connections.add(facing);
+                    } else {
                         if (part == null) connections.add(facing);
                     }
                 }
@@ -60,24 +75,22 @@ public class CompatAE2 extends CompatBaseTE {
     public boolean isAcceptable(TileEntity te) {
         if (te instanceof TileCableBus) {
             TileCableBus tile = (TileCableBus) te;
-            return tile.getPart(AEPartLocation.INTERNAL) instanceof PartDenseCable;
+            return tile.getPart(AEPartLocation.INTERNAL) instanceof PartCable;
         }
         return false;
     }
 
     @Override
     public void connect(TileEntity te, EnumFacing direction, EntityPlayer player) {
-        if (isAcceptable(te)) {
+        if (isAcceptable(te) && canConnect(te, direction) && (!getConnections(te).contains(direction))) {
             TileCableBus tile = (TileCableBus) te;
-            if (AEApi.instance().definitions().parts().cableAnchor().maybeStack(1).isPresent()) {
-                if (tile.getPart(AEPartLocation.fromFacing(direction)) instanceof AEBlockPart) {
-                    tile.removePart(AEPartLocation.fromFacing(direction), false);
-                    tile.partChanged();
-                    tile.markForSave();
-                    tile.markForUpdate();
-                    if (te.getWorld() instanceof WorldServer) {
-                        Utils.update(te);
-                    }
+            if (tile.getPart(AEPartLocation.fromFacing(direction)) instanceof AEBlockPart) {
+                tile.removePart(AEPartLocation.fromFacing(direction), false);
+                tile.partChanged();
+                tile.markForSave();
+                tile.markForUpdate();
+                if (te.getWorld() instanceof WorldServer) {
+                    Utils.update(te);
                 }
             }
         }
@@ -85,17 +98,15 @@ public class CompatAE2 extends CompatBaseTE {
 
     @Override
     public void disconnect(TileEntity te, EnumFacing direction, EntityPlayer player) {
-        if (isAcceptable(te)) {
+        if (isAcceptable(te) && canConnect(te, direction) && getConnections(te).contains(direction)) {
             TileCableBus tile = (TileCableBus) te;
-            if (AEApi.instance().definitions().parts().cableAnchor().maybeStack(1).isPresent()) {
-                if (tile.canAddPart(new ItemStack(RegisterAEStuff.aepart, 1), AEPartLocation.fromFacing(direction))) {
-                    tile.addPart(new ItemStack(RegisterAEStuff.aepart, 1), AEPartLocation.fromFacing(direction), player, player.getActiveHand());
-                    tile.partChanged();
-                    tile.markForSave();
-                    tile.markForUpdate();
-                    if (te.getWorld() instanceof WorldServer) {
-                        Utils.update(te);
-                    }
+            if (tile.canAddPart(new ItemStack(RegisterAEStuff.aepart, 1), AEPartLocation.fromFacing(direction))) {
+                tile.addPart(new ItemStack(RegisterAEStuff.aepart, 1), AEPartLocation.fromFacing(direction), player, player.getActiveHand());
+                tile.partChanged();
+                tile.markForSave();
+                tile.markForUpdate();
+                if (te.getWorld() instanceof WorldServer) {
+                    Utils.update(te);
                 }
             }
         }

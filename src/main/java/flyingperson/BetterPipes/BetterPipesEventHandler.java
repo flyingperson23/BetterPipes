@@ -25,65 +25,68 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BetterPipesEventHandler {
     @SubscribeEvent
     public void onEvent(BlockEvent.PlaceEvent event) {
-        for (int j = 0; j < BetterPipes.instance.COMPAT_LIST.size(); j++) {
-            ICompatBase i = BetterPipes.instance.COMPAT_LIST.get(j);
-            if (!(i instanceof CompatVanilla)) {
+        if (!event.getWorld().isRemote) {
+            for (int j = 0; j < BetterPipes.instance.COMPAT_LIST.size(); j++) {
+                ICompatBase i = BetterPipes.instance.COMPAT_LIST.get(j);
+                if (!(i instanceof CompatVanilla)) {
 
-                BlockPos pos = event.getPos();
-                BlockWrapper block = new BlockWrapper(event);
-                if (i.isAcceptable(block)) {
-                    for (EnumFacing facing : EnumFacing.VALUES) {
+                    BlockPos pos = event.getPos();
+                    BlockWrapper block = new BlockWrapper(event);
+                    if (i.isAcceptable(block)) {
+                        for (EnumFacing facing : EnumFacing.VALUES) {
 
-                        boolean lookingAt = false;
+                            boolean lookingAt = false;
 
-                        RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer());
-                        RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
+                            RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer());
+                            RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
-                        if (rt1 != null) {
-                            if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
-                        }
-                        if (rt2 != null) {
-                            if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
-                        }
+                            if (rt1 != null) {
+                                if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
+                            }
+                            if (rt2 != null) {
+                                if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
+                            }
 
-                        if (i.canConnect(block, facing)) {
-                            if ((lookingAt & BPConfig.general.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & BPConfig.general.sneaking_makes_pipes_connect)) {
+                            if (i.canConnect(block, facing) && ((lookingAt & BPConfig.general.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & BPConfig.general.sneaking_makes_pipes_connect))) {
                                 i.connect(block, facing, event.getPlayer());
                                 i.connect(block.offset(facing), facing.getOpposite(), event.getPlayer());
                             } else {
                                 i.disconnect(block, facing, event.getPlayer());
                                 i.disconnect(block.offset(facing), facing.getOpposite(), event.getPlayer());
                             }
-                            BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, j));
-                            BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos.offset(facing, 1), j));
+                            BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos, j));
+                            BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos.offset(facing, 1), j));
+                            Utils.update(block, facing);
                         }
-                    }
-                } else {
-                    for (EnumFacing facing : EnumFacing.VALUES) {
-                        BlockWrapper side = block.offset(facing);
-                        if (side != null) {
-                            if (i.isAcceptable(side)) {
+                    } else {
+                        for (EnumFacing facing : EnumFacing.VALUES) {
+                            BlockWrapper side = block.offset(facing);
+                            if (side != null) {
+                                if (i.isAcceptable(side)) {
 
-                                boolean lookingAt = false;
+                                    boolean lookingAt = false;
 
-                                RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer());
-                                RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
+                                    RayTraceResult rt1 = Utils.getBlockLookingat1(event.getPlayer());
+                                    RayTraceResult rt2 = Utils.getBlockLookingat2(event.getPlayer(), pos);
 
 
-                                if (rt1 != null) {
-                                    if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing,1))) lookingAt = true;
+                                    if (rt1 != null) {
+                                        if (Utils.arePosEqual(rt1.getBlockPos(), pos.offset(facing, 1)))
+                                            lookingAt = true;
+                                    }
+                                    if (rt2 != null) {
+                                        if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1)))
+                                            lookingAt = true;
+                                    }
+
+                                    if (i.canConnect(side, facing.getOpposite()) && (lookingAt & BPConfig.general.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & BPConfig.general.sneaking_makes_pipes_connect)) {
+                                        i.connect(side, facing.getOpposite(), event.getPlayer());
+                                    } else {
+                                        i.disconnect(side, facing.getOpposite(), event.getPlayer());
+                                    }
+                                    BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(side.pos, j));
                                 }
-                                if (rt2 != null) {
-                                    if (Utils.arePosEqual(rt2.getBlockPos(), pos.offset(facing, 1))) lookingAt = true;
-                                }
-
-                                if ((lookingAt & BPConfig.general.clicking_on_pipes_connects_them) | (event.getPlayer().isSneaking() & BPConfig.general.sneaking_makes_pipes_connect)) {
-                                    i.connect(side, facing.getOpposite(), event.getPlayer());
-                                } else {
-                                    i.disconnect(side, facing.getOpposite(), event.getPlayer());
-                                }
-                                BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(side.pos, j));
                             }
                         }
                     }
@@ -126,9 +129,9 @@ public class BetterPipesEventHandler {
                 ICompatBase compat = BetterPipes.instance.COMPAT_LIST.get(i);
                 if (lookingAt != null) {
                     if (compat.isAcceptable(new BlockWrapper(lookingAt.getBlockPos(), event.getEntityPlayer()))) {
-                        if (event.isCancelable()) event.setCanceled(true);
                         for (IWrenchProvider c : BetterPipes.instance.WRENCH_PROVIDERS) {
                             if (c.enable() && c.canBeUsed(event.getEntityPlayer().getHeldItemMainhand(), event.getEntityPlayer()) && c.isAcceptable(event.getEntityPlayer().getHeldItemMainhand())) {
+                                if (event.isCancelable()) event.setCanceled(true);
                                 if (!BetterPipes.instance.wrenchMap.contains(lookingAt.getBlockPos())) {
                                     BetterPipes.instance.wrenchMap.add(lookingAt.getBlockPos());
                                     if (Utils.wrenchUse(event, i)) {
@@ -162,7 +165,7 @@ public class BetterPipesEventHandler {
                         }
                     }
                     if (flag >= 0) {
-                        BetterPipes.INSTANCE.sendToServer(new MessageGetConnections(pos, flag));
+                        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos, flag));
                         if (ConnectionGrid.instance() != null) {
                             if (ConnectionGrid.instance().get(pos) != null) {
                                 Renderer.renderOverlay(player, pos, lookingAt.sideHit, event.getPartialTicks(), ConnectionGrid.instance().get(pos).connections);

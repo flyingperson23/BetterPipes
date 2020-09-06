@@ -1,12 +1,7 @@
 package flyingperson.BetterPipes.compat;
 
-import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
-import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
-import mekanism.common.MekanismItems;
-import mekanism.common.tile.prefab.TileEntityBasicBlock;
 import mekanism.common.tile.transmitter.TileEntitySidedPipe;
 import mekanism.common.tile.transmitter.TileEntityTransmitter;
 import net.minecraft.block.Block;
@@ -60,9 +55,6 @@ public class CompatMekanism extends CompatBaseTE {
             if (te.getWorld() instanceof WorldServer) {
                 Utils.update(te);
             }
-            if (te instanceof TileEntityBasicBlock) {
-                Mekanism.packetHandler.sendUpdatePacket((TileEntityBasicBlock) te);
-            }
         }
     }
 
@@ -76,9 +68,6 @@ public class CompatMekanism extends CompatBaseTE {
             tile.notifyTileChange();
             if (te.getWorld() instanceof WorldServer) {
                 Utils.update(te);
-            }
-            if (te instanceof TileEntityBasicBlock) {
-                Mekanism.packetHandler.sendUpdatePacket((TileEntityBasicBlock) te);
             }
         }
     }

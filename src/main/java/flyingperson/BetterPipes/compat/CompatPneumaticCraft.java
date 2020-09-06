@@ -1,16 +1,11 @@
 package flyingperson.BetterPipes.compat;
 
-import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

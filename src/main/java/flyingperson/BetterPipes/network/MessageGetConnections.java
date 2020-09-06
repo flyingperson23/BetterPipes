@@ -2,11 +2,9 @@ package flyingperson.BetterPipes.network;
 
 import flyingperson.BetterPipes.BetterPipes;
 import flyingperson.BetterPipes.compat.ICompatBase;
-import flyingperson.BetterPipes.compat.CompatBaseTE;
 import flyingperson.BetterPipes.util.BlockWrapper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -41,7 +39,7 @@ public class MessageGetConnections implements IMessage {
                 BlockWrapper block = new BlockWrapper(message.pos, serverPlayer);
                 if (compat.isAcceptable(block)) {
                     ConnectionBlock connections = new ConnectionBlock(block.pos, compat.getConnections(block));
-                    BetterPipes.INSTANCE.sendTo(new MessageReturnConnections(connections), serverPlayer);
+                    BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendTo(new MessageReturnConnections(connections), serverPlayer);
                 }
             });
             return null;

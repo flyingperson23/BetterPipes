@@ -23,7 +23,7 @@ public class BlockWrapper {
         this(e.getPos(), e.getState(), e.getWorld());
     }
     public BlockWrapper offset(EnumFacing direction) {
-        BlockPos offsetBlock = pos.offset(direction);
+        BlockPos offsetBlock = pos.offset(direction, 1);
         return new BlockWrapper(offsetBlock, world.getBlockState(offsetBlock), world);
     }
 }

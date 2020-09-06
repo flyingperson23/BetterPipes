@@ -6,6 +6,8 @@ import flyingperson.BetterPipes.compat.gtce.CompatGTCEFluid;
 import flyingperson.BetterPipes.compat.gtce.CompatGTCEItem;
 import flyingperson.BetterPipes.compat.wrench.*;
 import flyingperson.BetterPipes.proxy.CommonProxy;
+import flyingperson.BetterPipes.util.AE2EventHandler;
+import flyingperson.BetterPipes.util.BCEventHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -30,14 +32,14 @@ public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.13";
+    public static final String VERSION = "0.14";
 
     public static Logger logger;
 
     @Mod.Instance
     public static BetterPipes instance;
 
-    public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("betterpipes");
+    public static final SimpleNetworkWrapper BETTER_PIPES_NETWORK_WRAPPER = NetworkRegistry.INSTANCE.newSimpleChannel("betterpipes");
 
     public int counter = 0;
 
@@ -56,6 +58,8 @@ public class BetterPipes
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new BetterPipesEventHandler());
         MinecraftForge.EVENT_BUS.register(this);
+        if (Loader.isModLoaded("buildcrafttransport")) MinecraftForge.EVENT_BUS.register(new BCEventHandler());
+        if (Loader.isModLoaded("appliedenergistics2")) MinecraftForge.EVENT_BUS.register(new AE2EventHandler());
         proxy.init(event);
     }
 
@@ -111,6 +115,9 @@ public class BetterPipes
             COMPAT_LIST.add(new CompatExU2());
             COMPAT_LIST.add(new CompatExU2TE());
             WRENCH_PROVIDERS.add(new ExU2WrenchProvider());
+        }
+        if (Loader.isModLoaded("ic2")) {
+            WRENCH_PROVIDERS.add(new IC2WrenchProvider());
         }
     }
 

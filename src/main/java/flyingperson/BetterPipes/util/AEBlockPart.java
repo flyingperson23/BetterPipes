@@ -30,9 +30,6 @@ public class AEBlockPart implements IPart {
     @PartModels
     public static final PartModel DEFAULT_MODELS = new PartModel(false, new ResourceLocation(BetterPipes.MODID, "ae2part/blockpart" ));
 
-    private IPartHost host = null;
-    private AEPartLocation mySide = AEPartLocation.UP;
-
     public AEBlockPart() {
 
     }
@@ -133,8 +130,7 @@ public class AEBlockPart implements IPart {
 
     @Override
     public void setPartHostInfo(final AEPartLocation side, final IPartHost host, final TileEntity tile ) {
-        this.host = host;
-        this.mySide = side;
+
     }
 
     @Override
@@ -169,7 +165,7 @@ public class AEBlockPart implements IPart {
 
     @Override
     public boolean canBePlacedOn( final BusSupport what ) {
-        return what == BusSupport.DENSE_CABLE;
+        return what == BusSupport.DENSE_CABLE || what == BusSupport.CABLE;
     }
 
     @Override

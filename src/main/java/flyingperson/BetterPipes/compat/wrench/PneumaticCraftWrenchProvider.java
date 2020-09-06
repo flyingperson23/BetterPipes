@@ -30,7 +30,7 @@ public class PneumaticCraftWrenchProvider implements IWrenchProvider {
     public void use(ItemStack item, EntityPlayer player) {
         if (isAcceptable(item) && canBeUsed(item, player)) {
             ItemPneumaticWrench wrench = (ItemPneumaticWrench) Item.REGISTRY.getObject(new ResourceLocation("pneumaticcraft", "pneumatic_wrench"));
-            if (wrench != null) wrench.addAir(item, PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+            if (wrench != null) wrench.addAir(item, -1*PneumaticValues.USAGE_PNEUMATIC_WRENCH);
         }
     }
 }
