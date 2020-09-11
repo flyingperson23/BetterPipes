@@ -7,21 +7,22 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompatVanilla implements ICompatBase {
+public class CompatVanilla extends CompatBaseRotation {
 
     @Override
-    public boolean canConnect(BlockWrapper block, EnumFacing direction) {
+    public boolean canBeRotatedTo(BlockWrapper block, EnumFacing direction) {
         return !getConnections(block).contains(direction);
     }
 
     @Override
-    public ArrayList<EnumFacing> getConnections(BlockWrapper block) {
+    public ArrayList<EnumFacing> getRotation(BlockWrapper block) {
         ArrayList<EnumFacing> connections = new ArrayList<>();
 
         if (block.state.getBlock() == Blocks.FURNACE) {
@@ -66,9 +67,24 @@ public class CompatVanilla implements ICompatBase {
             connections.add(block.world.getBlockState(block.pos).getValue(BlockEnderChest.FACING));
         }
 
-        //if (block.state.getBlock() == Blocks.CHEST) {
-        //    connections.add(block.world.getBlockState(block.pos).getValue(BlockChest.FACING));
-        //}
+        if (block.state.getBlock() instanceof BlockChest) {
+            connections.add(block.world.getBlockState(block.pos).getValue(BlockChest.FACING));
+            TileEntityChest c = (TileEntityChest) Utils.getTE(block);
+            if (c != null) {
+                c.adjacentChestChecked = false;
+                c.checkForAdjacentChests();
+                TileEntityChest adjacent = null;
+                if (c.adjacentChestXNeg != null) adjacent = c.adjacentChestXNeg;
+                if (c.adjacentChestXPos != null) adjacent = c.adjacentChestXPos;
+                if (c.adjacentChestZNeg != null) adjacent = c.adjacentChestZNeg;
+                if (c.adjacentChestZPos != null) adjacent = c.adjacentChestZPos;
+                if (adjacent != null) {
+                    for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+                        if (Utils.arePosEqual(c.getPos().offset(facing), adjacent.getPos())) connections.add(facing);
+                    }
+                }
+            }
+        }
 
         return connections;
     }
@@ -84,12 +100,13 @@ public class CompatVanilla implements ICompatBase {
                 || block.state.getBlock() instanceof BlockRedstoneRepeater
                 || block.state.getBlock() instanceof BlockRedstoneComparator
                 || block.state.getBlock() == Blocks.ANVIL
-                || block.state.getBlock() == Blocks.ENDER_CHEST;
-                //|| block.state.getBlock() instanceof BlockChest;
+                || block.state.getBlock() == Blocks.ENDER_CHEST
+                || block.state.getBlock() == Blocks.CHEST
+                || block.state.getBlock() == Blocks.TRAPPED_CHEST;
     }
 
     @Override
-    public void connect(BlockWrapper block, EnumFacing direction, EntityPlayer player) {
+    public void rotateTo(BlockWrapper block, EnumFacing direction, EntityPlayer player) {
         if (!block.world.isRemote) {
             if (block.state.getBlock() == Blocks.FURNACE) {
                 if (direction != EnumFacing.UP && direction != EnumFacing.DOWN) {
@@ -152,19 +169,34 @@ public class CompatVanilla implements ICompatBase {
                 }
             }
 
-            //if (block.state.getBlock() instanceof BlockChest) {
-            //    if (Utils.isHorizontal(direction)) {
-            //        block.world.setBlockState(block.pos, block.world.getBlockState(block.pos).withProperty(BlockChest.FACING, direction));
-            //    }
-            //}
+            if (block.state.getBlock() instanceof BlockChest) {
+                if (Utils.isHorizontal(direction) && canConnect(block, direction)) {
+                    TileEntityChest c = (TileEntityChest) Utils.getTE(block);
+                    if (c != null) {
+                        c.adjacentChestChecked = false;
+                        c.checkForAdjacentChests();
+                        TileEntityChest adjacent = null;
+                        if (c.adjacentChestXNeg != null) adjacent = c.adjacentChestXNeg;
+                        if (c.adjacentChestXPos != null) adjacent = c.adjacentChestXPos;
+                        if (c.adjacentChestZNeg != null) adjacent = c.adjacentChestZNeg;
+                        if (c.adjacentChestZPos != null) adjacent = c.adjacentChestZPos;
+                        if (adjacent != null && block.state.getValue(BlockChest.FACING) == direction.getOpposite() && block.world.getBlockState(adjacent.getPos()).getValue(BlockChest.FACING) == direction.getOpposite()) {
+                            block.world.setBlockState(adjacent.getPos(), block.world.getBlockState(adjacent.getPos()).withProperty(BlockChest.FACING, direction));
+                            block.world.setBlockState(block.pos, block.world.getBlockState(block.pos).withProperty(BlockChest.FACING, direction));
+                        } else if (adjacent == null) {
+                            block.world.setBlockState(block.pos, block.world.getBlockState(block.pos).withProperty(BlockChest.FACING, direction));
+                        }
+                    }
+                }
+            }
 
             block.world.notifyBlockUpdate(block.pos, block.state, block.state, 3);
         }
     }
 
     @Override
-    public void disconnect(BlockWrapper block, EnumFacing direction, EntityPlayer player) {
-
+    public Class<? extends ICompatBase> getMainCompatClass() {
+        return this.getClass();
     }
 
     @Override
@@ -188,7 +220,8 @@ public class CompatVanilla implements ICompatBase {
         blocks.add(Blocks.UNPOWERED_COMPARATOR);
         blocks.add(Blocks.ANVIL);
         blocks.add(Blocks.ENDER_CHEST);
-        //blocks.add(Blocks.CHEST);
+        blocks.add(Blocks.CHEST);
+        blocks.add(Blocks.TRAPPED_CHEST);
         return blocks;
     }
 

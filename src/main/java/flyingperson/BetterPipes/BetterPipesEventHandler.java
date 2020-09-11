@@ -1,7 +1,7 @@
 package flyingperson.BetterPipes;
 
 import flyingperson.BetterPipes.client.Renderer;
-import flyingperson.BetterPipes.compat.CompatVanilla;
+import flyingperson.BetterPipes.compat.CompatBaseRotation;
 import flyingperson.BetterPipes.compat.ICompatBase;
 import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.network.ConnectionGrid;
@@ -28,7 +28,7 @@ public class BetterPipesEventHandler {
         if (!event.getWorld().isRemote) {
             for (int j = 0; j < BetterPipes.instance.COMPAT_LIST.size(); j++) {
                 ICompatBase i = BetterPipes.instance.COMPAT_LIST.get(j);
-                if (!(i instanceof CompatVanilla)) {
+                if (!(i instanceof CompatBaseRotation)) {
 
                     BlockPos pos = event.getPos();
                     BlockWrapper block = new BlockWrapper(event);
@@ -129,14 +129,16 @@ public class BetterPipesEventHandler {
                 ICompatBase compat = BetterPipes.instance.COMPAT_LIST.get(i);
                 if (lookingAt != null) {
                     if (compat.isAcceptable(new BlockWrapper(lookingAt.getBlockPos(), event.getEntityPlayer()))) {
-                        for (IWrenchProvider c : BetterPipes.instance.WRENCH_PROVIDERS) {
-                            if (c.enable() && c.canBeUsed(event.getEntityPlayer().getHeldItemMainhand(), event.getEntityPlayer()) && c.isAcceptable(event.getEntityPlayer().getHeldItemMainhand())) {
-                                if (event.isCancelable()) event.setCanceled(true);
-                                if (!BetterPipes.instance.wrenchMap.contains(lookingAt.getBlockPos())) {
-                                    BetterPipes.instance.wrenchMap.add(lookingAt.getBlockPos());
-                                    if (Utils.wrenchUse(event, i)) {
-                                        c.use(event.getEntityPlayer().getHeldItemMainhand(), event.getEntityPlayer());
-                                        return;
+                        if ((compat instanceof CompatBaseRotation && event.getEntityPlayer().isSneaking())  | (!(compat instanceof CompatBaseRotation ) &&  !event.getEntityPlayer().isSneaking())) {
+                            for (IWrenchProvider c : BetterPipes.instance.WRENCH_PROVIDERS) {
+                                if (c.enable() && c.canBeUsed(event.getEntityPlayer().getHeldItemMainhand(), event.getEntityPlayer()) && c.isAcceptable(event.getEntityPlayer().getHeldItemMainhand())) {
+                                    if (event.isCancelable()) event.setCanceled(true);
+                                    if (!BetterPipes.instance.wrenchMap.contains(lookingAt.getBlockPos())) {
+                                        BetterPipes.instance.wrenchMap.add(lookingAt.getBlockPos());
+                                        if (Utils.wrenchUse(event, i)) {
+                                            c.use(event.getEntityPlayer().getHeldItemMainhand(), event.getEntityPlayer());
+                                            return;
+                                        }
                                     }
                                 }
                             }
@@ -156,25 +158,23 @@ public class BetterPipesEventHandler {
                 RayTraceResult lookingAt = Utils.getBlockLookingAtIgnoreBB(player);
                 if (lookingAt != null) {
                     BlockPos pos = lookingAt.getBlockPos();
-                    int flag = -1;
-
                     for (int i = 0; i < BetterPipes.instance.COMPAT_LIST.size(); i++) {
                         ICompatBase compat = BetterPipes.instance.COMPAT_LIST.get(i);
                         if (compat.isAcceptable(new BlockWrapper(pos, player))) {
-                            flag = i;
-                        }
-                    }
-                    if (flag >= 0) {
-                        BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos, flag));
-                        if (ConnectionGrid.instance() != null) {
-                            if (ConnectionGrid.instance().get(pos) != null) {
-                                Renderer.renderOverlay(player, pos, lookingAt.sideHit, event.getPartialTicks(), ConnectionGrid.instance().get(pos).connections);
-                                EnumFacing directionHovered = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
-                                if (BPConfig.visual.highlight_wrench_hover) Renderer.renderSide(player, pos, directionHovered, event.getPartialTicks(),  0.5F);
-                                if (BPConfig.visual.block_outline && directionHovered != null) Renderer.drawOutline(player, pos.offset(directionHovered, 1), event.getPartialTicks());
+                            if ((compat instanceof CompatBaseRotation && Minecraft.getMinecraft().player.isSneaking()) | (!(compat instanceof CompatBaseRotation ) &&  !Minecraft.getMinecraft().player.isSneaking())) {
+                                BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos, i));
+                                if (ConnectionGrid.instance() != null) {
+                                    if (ConnectionGrid.instance().get(pos) != null) {
+                                        Renderer.renderOverlay(player, pos, lookingAt.sideHit, event.getPartialTicks(), ConnectionGrid.instance().get(pos).connections);
+                                        EnumFacing directionHovered = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+                                        if (BPConfig.visual.highlight_wrench_hover) Renderer.renderSide(player, pos, directionHovered, event.getPartialTicks(),  0.5F);
+                                        if (BPConfig.visual.block_outline && directionHovered != null) Renderer.drawOutline(player, pos.offset(directionHovered, 1), event.getPartialTicks());
+                                    }
+                                }
                             }
                         }
                     }
+
                 }
             }
         }

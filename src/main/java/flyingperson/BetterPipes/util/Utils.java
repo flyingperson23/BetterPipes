@@ -2,6 +2,7 @@ package flyingperson.BetterPipes.util;
 
 import flyingperson.BetterPipes.BPConfig;
 import flyingperson.BetterPipes.BetterPipes;
+import flyingperson.BetterPipes.compat.CompatBaseRotation;
 import flyingperson.BetterPipes.compat.CompatVanilla;
 import flyingperson.BetterPipes.compat.ICompatBase;
 import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
@@ -548,27 +549,25 @@ public class Utils {
             if (lookingAt != null) {
                 BlockPos pos = lookingAt.getBlockPos();
                 BlockWrapper block = new BlockWrapper(pos, event.getWorld().getBlockState(pos), event.getWorld());
-                if (!player.isSneaking()) {
-                    EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
-                    if (sideToggled != null) {
-                        if (compat.isAcceptable(block)) {
-                            if (compat.getConnections(block).contains(sideToggled)) {
-                                compat.disconnect(block, sideToggled, player);
-                                if (!(compat instanceof CompatVanilla))
-                                compat.disconnect(block.offset(sideToggled), sideToggled.getOpposite(), player);
-                            } else {
-                                compat.connect(block, sideToggled, player);
-                                if (!(compat instanceof CompatVanilla)) compat.connect(block.offset(sideToggled), sideToggled.getOpposite(), player);
-                            }
-                            setConnection = pos;
+                EnumFacing sideToggled = Utils.getDirection(lookingAt.sideHit, lookingAt.hitVec);
+                if (sideToggled != null) {
+                    if (compat.isAcceptable(block)) {
+                        if (compat.getConnections(block).contains(sideToggled)) {
+                            compat.disconnect(block, sideToggled, player);
+                            if (!(compat instanceof CompatBaseRotation))
+                            compat.disconnect(block.offset(sideToggled), sideToggled.getOpposite(), player);
+                        } else {
+                            compat.connect(block, sideToggled, player);
+                            if (!(compat instanceof CompatBaseRotation)) compat.connect(block.offset(sideToggled), sideToggled.getOpposite(), player);
                         }
-                        worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
-                        block.state.getBlock().onNeighborChange(worldIn, block.pos, block.pos.offset(sideToggled, 1));
-                        BlockWrapper connectTo = block.offset(sideToggled);
-                        if (connectTo != null) {
-                            worldIn.notifyBlockUpdate(connectTo.pos, connectTo.state, connectTo.state, 3);
-                            connectTo.state.getBlock().onNeighborChange(worldIn, connectTo.pos, connectTo.pos.offset(sideToggled.getOpposite(), 1));
-                        }
+                        setConnection = pos;
+                    }
+                    worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 3);
+                    block.state.getBlock().onNeighborChange(worldIn, block.pos, block.pos.offset(sideToggled, 1));
+                    BlockWrapper connectTo = block.offset(sideToggled);
+                    if (connectTo != null) {
+                        worldIn.notifyBlockUpdate(connectTo.pos, connectTo.state, connectTo.state, 3);
+                        connectTo.state.getBlock().onNeighborChange(worldIn, connectTo.pos, connectTo.pos.offset(sideToggled.getOpposite(), 1));
                     }
                 }
                 BetterPipes.BETTER_PIPES_NETWORK_WRAPPER.sendToServer(new MessageGetConnections(pos, compatID));
@@ -705,5 +704,9 @@ public class Utils {
 
     public static boolean isHorizontal(EnumFacing c) {
         return c != EnumFacing.UP && c != EnumFacing.DOWN && c != null;
+    }
+
+    public static TileEntity getTE(BlockWrapper block) {
+        return block.state.getBlock().hasTileEntity(block.state) ? block.world.getTileEntity(block.pos) : null;
     }
 }

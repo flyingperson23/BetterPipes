@@ -1,10 +1,7 @@
 package flyingperson.BetterPipes.compat;
 
-import buildcraft.api.BCItems;
 import buildcraft.transport.BCTransportBlocks;
 import buildcraft.transport.tile.TilePipeHolder;
-import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.BCBlockPart;
 import flyingperson.BetterPipes.util.RegisterBCStuff;
 import flyingperson.BetterPipes.util.Utils;

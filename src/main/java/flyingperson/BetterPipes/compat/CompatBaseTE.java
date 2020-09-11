@@ -1,6 +1,7 @@
 package flyingperson.BetterPipes.compat;
 
 import flyingperson.BetterPipes.util.BlockWrapper;
+import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -36,31 +37,31 @@ public abstract class CompatBaseTE implements ICompatBase {
 
     @Override
     public boolean canConnect(BlockWrapper block, EnumFacing direction) {
-        return canConnect(block.world.getTileEntity(block.pos), direction);
+        return canConnect(Utils.getTE(block), direction);
     }
 
     @Override
     public ArrayList<EnumFacing> getConnections(BlockWrapper block) {
-        return getConnections(block.world.getTileEntity(block.pos));
+        return getConnections(Utils.getTE(block));
     }
 
     @Override
     public boolean isAcceptable(BlockWrapper block) {
-        return isAcceptable(block.world.getTileEntity(block.pos));
+        return isAcceptable(Utils.getTE(block));
     }
 
     @Override
     public void connect(BlockWrapper block, EnumFacing direction, EntityPlayer player) {
-        connect(block.world.getTileEntity(block.pos), direction, player);
+        connect(Utils.getTE(block), direction, player);
     }
 
     @Override
     public void disconnect(BlockWrapper block, EnumFacing direction, EntityPlayer player) {
-        disconnect(block.world.getTileEntity(block.pos), direction, player);
+        disconnect(Utils.getTE(block), direction, player);
     }
 
     @Override
     public Collection<ItemStack> getDrops(BlockWrapper block, IBlockState blockState) {
-        return getDrops(block.world.getTileEntity(block.pos), blockState);
+        return getDrops(Utils.getTE(block), blockState);
     }
 }

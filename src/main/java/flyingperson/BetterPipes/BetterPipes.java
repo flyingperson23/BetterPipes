@@ -32,7 +32,7 @@ public class BetterPipes
 {
     public static final String MODID = "betterpipes";
     public static final String NAME = "Better Pipes";
-    public static final String VERSION = "0.14";
+    public static final String VERSION = "0.15";
 
     public static Logger logger;
 
@@ -47,8 +47,6 @@ public class BetterPipes
     public static CommonProxy proxy;
 
     public ArrayList<BlockPos> wrenchMap = new ArrayList<>();
-	
-	
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -88,6 +86,7 @@ public class BetterPipes
         }
         if (BPConfig.compat.bc && Loader.isModLoaded("buildcrafttransport")) {
             COMPAT_LIST.add(new CompatBC());
+            COMPAT_LIST.add(new CompatBCRotation());
             WRENCH_PROVIDERS.add(new BCWrenchProvider());
         }
         if (BPConfig.compat.lp && Loader.isModLoaded("logisticspipes")) {
