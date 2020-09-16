@@ -709,4 +709,10 @@ public class Utils {
     public static TileEntity getTE(BlockWrapper block) {
         return block.state.getBlock().hasTileEntity(block.state) ? block.world.getTileEntity(block.pos) : null;
     }
+
+    public static <T> ArrayList<T> getArrayList(T t) {
+        ArrayList<T> list = new ArrayList<>();
+        list.add(t);
+        return list;
+    }
 }

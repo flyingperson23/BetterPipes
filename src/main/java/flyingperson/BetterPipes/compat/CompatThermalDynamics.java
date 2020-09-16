@@ -6,9 +6,6 @@ import cofh.thermaldynamics.duct.ConnectionType;
 import cofh.thermaldynamics.duct.attachments.cover.Cover;
 import cofh.thermaldynamics.duct.tiles.*;
 import cofh.thermaldynamics.init.TDBlocks;
-import cofh.thermalfoundation.init.TFItems;
-import flyingperson.BetterPipes.BPConfig;
-import flyingperson.BetterPipes.compat.wrench.IWrenchProvider;
 import flyingperson.BetterPipes.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -138,7 +135,7 @@ public class CompatThermalDynamics extends CompatBaseTE {
 
     @Override
     public boolean isAcceptable(TileEntity te) {
-        return te instanceof TileGrid;
+        return te instanceof TileGrid && !(te instanceof TileTransportDuct);
     }
 
     @Override
