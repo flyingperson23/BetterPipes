@@ -54,6 +54,12 @@ public class CompatThermalDynamics extends CompatBaseTE {
                 grid.setConnectionType(direction.getIndex(), ConnectionType.NORMAL);
 
                 grid.updateLighting();
+                grid.onNeighborBlockChange();
+                grid.onNeighborTileChange(grid.getPos().offset(direction, 1));
+
+                for (DuctUnit d : grid.getDuctUnits()) {
+                    if (d.getGrid() != null) d.getGrid().destroyAndRecreate();
+                }
             }
             if (te.getWorld() instanceof WorldServer) {
                 Utils.update(te);
@@ -73,6 +79,8 @@ public class CompatThermalDynamics extends CompatBaseTE {
                         for (Attachment a : grid.attachmentData.attachments) {
                             if (a != null) {
                                 if (Utils.fromIndex(a.side) == direction) {
+                                    Utils.dropItems(a.getDrops(), player);
+                                    grid.removeAttachment(a);
                                     flag = false;
                                 }
                             }
@@ -91,6 +99,12 @@ public class CompatThermalDynamics extends CompatBaseTE {
                 if (flag) grid.setConnectionType(direction.getIndex(), ConnectionType.BLOCKED);
 
                 grid.updateLighting();
+                grid.onNeighborBlockChange();
+                grid.onNeighborTileChange(grid.getPos().offset(direction, 1));
+
+                for (DuctUnit d : grid.getDuctUnits()) {
+                    if (d.getGrid() != null) d.getGrid().destroyAndRecreate();
+                }
             }
             if (te.getWorld() instanceof WorldServer) {
                 Utils.update(te);

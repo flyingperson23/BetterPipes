@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "0.16"
+version = "0.17"
 group = "flyingperson.betterpipes"
 archivesBaseName = "betterpipes"
 
